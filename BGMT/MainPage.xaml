@@ -5,26 +5,28 @@
 
     <ContentPage.MenuBarItems>
         <!-- File Menu Bar Item -->
-        <MenuBarItem Text="File"> 
+        <MenuBarItem Text="File">
             <MenuFlyoutItem Text="New Project"
-                            Command="{Binding NewProject}"/>
+                            Clicked="NavBarFile_New"/>
             <MenuFlyoutItem Text="Open Project"
-                            Command="{Binding OpenProject}"/>
+                            Clicked="NavBarFile_Open"/>
             <MenuFlyoutItem Text="Import File"
-                            Command="{Binding ImportFile}"/>
+                            Clicked="NavBarFile_Import"/>
             <MenuFlyoutItem Text="Export Project"
-                            Command="{Binding ExportProject}"/>
+                            Clicked="NavBarFile_Export"/>
             <MenuFlyoutItem Text="Exit"
-                            Command="{Binding Exit}"/>
+                            Clicked="NavBarFile_Exit"/>
         </MenuBarItem>
 
         <!-- Help Menu Bar Item -->
         <MenuBarItem Text="Help">
             <MenuFlyoutItem Text="Settings"
-                            Command="{Binding AccessSettings}"/>
+                            Clicked="NavBarHelp_Settings"/>
             <MenuFlyoutItem Text="Help"
-                            Command="{Binding AccessHelp}"/>
+                            Clicked="NavBarHelp_Help"/>
         </MenuBarItem>
     </ContentPage.MenuBarItems>
 
+    <Label FontSize="25" x:Name="target" Text="Hello" />
+    
 </ContentPage>
