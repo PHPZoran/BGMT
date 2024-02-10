@@ -10,10 +10,14 @@
                             Clicked="NavBarFile_New"/>
             <MenuFlyoutItem Text="Open Project"
                             Clicked="NavBarFile_Open"/>
-            <MenuFlyoutItem Text="Import File"
-                            Clicked="NavBarFile_Import"/>
-            <MenuFlyoutItem Text="Export Project"
-                            Clicked="NavBarFile_Export"/>
+            <MenuFlyoutItem x:Name="menuItemImport"
+                            Text="Import File"
+                            Clicked="NavBarFile_Import"
+                            IsEnabled="False"/>
+            <MenuFlyoutItem x:Name="menuItemExport"
+                            Text="Export Project"
+                            Clicked="NavBarFile_Export"
+                            IsEnabled="False"/>
             <MenuFlyoutItem Text="Exit"
                             Clicked="NavBarFile_Exit"/>
         </MenuBarItem>
