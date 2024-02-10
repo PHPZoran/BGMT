@@ -1,7 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="BGMT.MainPage">
+             x:Class="BGMT.MainPage"
+             WidthRequest="800"
+             HeightRequest="800">
 
     <ContentPage.MenuBarItems>
         <!-- File Menu Bar Item -->
@@ -31,6 +33,17 @@
         </MenuBarItem>
     </ContentPage.MenuBarItems>
 
-    <Label FontSize="25" x:Name="target" Text="Hello" />
-    
+    <VerticalStackLayout>
+        <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
+            <Button Text="Dialogue File"
+                Clicked="ModElement_AddDialogue"/>
+            <Button Text="Scripts File"
+                Clicked="ModElement_AddScript"/>
+            <Button Text="Installation File"
+                Clicked="ModElement_AddInstallation"/>
+        </HorizontalStackLayout>
+
+        <Label x:Name="target" Text="Hello" FontSize="25" VerticalOptions="Center" HorizontalOptions="Center" />
+    </VerticalStackLayout>
+
 </ContentPage>
