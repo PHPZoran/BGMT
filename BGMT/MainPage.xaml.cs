@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace BGMT
 {
@@ -15,7 +16,14 @@ namespace BGMT
         void NavBarFile_Open(object sender, EventArgs e) { target.Text = "Open Pressed"; }
         void NavBarFile_Import(object sender, EventArgs e) { target.Text = "Import Pressed"; }
         void NavBarFile_Export(object sender, EventArgs e) { target.Text = "Export Pressed"; }
-        void NavBarFile_Exit(object sender, EventArgs e) { target.Text = "Exit Pressed"; }
+        async void NavBarFile_Exit(object sender, EventArgs e)
+        {
+            bool answer = await DisplayAlert("Alert", "Are you sure you want to exit?", "Exit", "Cancel");
+            if (answer) 
+            {
+                Application.Current?.Quit();
+            }
+        }
 
         // Help Subitem Clicked Functionality
         void NavBarHelp_Settings(object sender, EventArgs e) { target.Text = "Settings Pressed"; }
