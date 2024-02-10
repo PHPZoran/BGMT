@@ -1,19 +1,36 @@
-﻿using System.Diagnostics;
+﻿using CommunityToolkit.Maui.Storage;
 using System.Runtime.CompilerServices;
 
 namespace BGMT
 {
     public partial class MainPage : ContentPage
     {
-
+        private string projectFolderPath;
         public MainPage()
         {
             InitializeComponent();
+
         }
 
         // File Subitem Clicked Functionality
-        void NavBarFile_New(object sender, EventArgs e) { target.Text = "New Pressed"; }
-        void NavBarFile_Open(object sender, EventArgs e) { target.Text = "Open Pressed"; }
+        private async void NavBarFile_New(object sender, EventArgs e) 
+        {
+            try 
+            {
+                var folder = await FolderPicker.PickAsync(default);
+                this.projectFolderPath = folder.Folder.Path;
+                target.Text = this.projectFolderPath;
+
+                this.menuItemImport.IsEnabled = true;
+                this.menuItemExport.IsEnabled = true;
+            }
+            catch(Exception ex) { Console.WriteLine(ex.ToString()); }
+        }
+        void NavBarFile_Open(object sender, EventArgs e) 
+        { 
+            target.Text = "Open Pressed";
+
+        }
         void NavBarFile_Import(object sender, EventArgs e) { target.Text = "Import Pressed"; }
         void NavBarFile_Export(object sender, EventArgs e) { target.Text = "Export Pressed"; }
         async void NavBarFile_Exit(object sender, EventArgs e)
