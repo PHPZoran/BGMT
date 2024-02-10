@@ -5,7 +5,7 @@ namespace BGMT
 {
     public partial class MainPage : ContentPage
     {
-        private string projectFolderPath;
+        private string projectFolderPath = "";
         public MainPage()
         {
             InitializeComponent();
@@ -18,6 +18,7 @@ namespace BGMT
             try
             {
                 var folder = await FolderPicker.PickAsync(default);
+                if (!folder.IsSuccessful) throw new Exception("Failed Folder Selection");
                 this.projectFolderPath = folder.Folder.Path;
                 target.Text = this.projectFolderPath;
 
@@ -39,14 +40,13 @@ namespace BGMT
         {
             target.Text = "Export Pressed";
         }
-        private async Task NavBarFile_Exit(object sender, EventArgs e)
+        private async void NavBarFile_Exit(object sender, EventArgs e)
         {
             bool answer = await DisplayAlert("Alert", "Are you sure you want to exit?", "Exit", "Cancel");
             if (answer)
             {
                 Application.Current?.Quit();
             }
-            target.Text = "Import Pressed";
             target.Text = "Exit Pressed";
         }
 
@@ -76,5 +76,4 @@ namespace BGMT
             target.Text = "Installation Pressed";
         }
     }
-
 }
