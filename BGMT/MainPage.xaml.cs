@@ -39,7 +39,7 @@ namespace BGMT
         {
             target.Text = "Export Pressed";
         }
-        private async Task NavBarFile_ExitAsync(object sender, EventArgs e)
+        private async Task NavBarFile_Exit(object sender, EventArgs e)
         {
             bool answer = await DisplayAlert("Alert", "Are you sure you want to exit?", "Exit", "Cancel");
             if (answer)
