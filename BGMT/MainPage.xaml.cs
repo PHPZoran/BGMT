@@ -27,14 +27,51 @@ namespace BGMT
             }
             catch (Exception ex) { Console.WriteLine(ex.ToString()); }
         }
-        private void NavBarFile_Open(object sender, EventArgs e)
+        private async void NavBarFile_Open(object sender, EventArgs e)
         {
-            target.Text = "Open Pressed";
+            try
+            {
+                var result = await FilePicker.Default.PickAsync();
+                if (result != null)
+                {
+                    if (result.FileName.EndsWith("txt", StringComparison.OrdinalIgnoreCase))
+                    {
+                        using var stream = await result.OpenReadAsync();
+                        using var reader = new StreamReader(stream);
+                        string text = await reader.ReadToEndAsync();
 
+                        /* Uncomment the below and consider where the path should be. Not sure yet. */
+                        //string outputPath = "path/to/output.txt";
+                        // using var writer = new StreamWriter(outputPath);
+                        //await writer.WriteAsync(text);
+                    }
+                    target.Text = result.FileName;
+                }
+            }
+            catch (Exception ex) { Console.WriteLine(ex.ToString()); }
         }
-        private void NavBarFile_Import(object sender, EventArgs e)
+        private async void NavBarFile_Import(object sender, EventArgs e)
         {
-            target.Text = "Import Pressed";
+            try
+            {
+                var result = await FilePicker.Default.PickAsync();
+                if (result != null)
+                {
+                    if (result.FileName.EndsWith(".d", StringComparison.OrdinalIgnoreCase) || result.FileName.EndsWith(".tp2", StringComparison.OrdinalIgnoreCase) || result.FileName.EndsWith(".baf", StringComparison.OrdinalIgnoreCase))
+                    {
+                        using var stream = await result.OpenReadAsync();
+                        using var reader = new StreamReader(stream);
+                        string text = await reader.ReadToEndAsync();
+
+                        /* Uncomment the below and consider where the path should be. Not sure yet. */
+                        //string outputPath = "path/to/output.txt";
+                        // using var writer = new StreamWriter(outputPath);
+                        //await writer.WriteAsync(text);
+                    }
+                    target.Text = result.FileName;
+                }
+            }
+            catch (Exception ex) { Console.WriteLine(ex.ToString()); }
         }
         private void NavBarFile_Export(object sender, EventArgs e)
         {
