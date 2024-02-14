@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.Runtime;
 
-namespace BGMT
+namespace TemplateBGMT
 {
     [Application]
     public class MainApplication : MauiApplication

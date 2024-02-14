@@ -1,4 +1,4 @@
-﻿namespace BGMT
+﻿namespace TemplateBGMT
 {
     public partial class AppShell : Shell
     {

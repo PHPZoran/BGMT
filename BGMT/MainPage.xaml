@@ -1,49 +1,53 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="BGMT.MainPage"
-             WidthRequest="800"
-             HeightRequest="800">
+             xmlns:local="clr-namespace:TemplateBGMT.UI_Elements"
+             x:Class="TemplateBGMT.MainPage"
+             BackgroundImageSource="background.png">
 
     <ContentPage.MenuBarItems>
-        <!-- File Menu Bar Item -->
         <MenuBarItem Text="File">
             <MenuFlyoutItem Text="New Project"
-                            Clicked="NavBarFile_New"/>
-            <MenuFlyoutItem Text="Open Project"
-                            Clicked="NavBarFile_Open"/>
-            <MenuFlyoutItem x:Name="menuItemImport"
-                            Text="Import File"
-                            Clicked="NavBarFile_Import"
+                            Clicked="CreateNewProject"/>
+            <MenuFlyoutSeparator/>
+            <MenuFlyoutItem Text="Open Project"/>
+            <MenuFlyoutSeparator/>
+            <MenuFlyoutItem Text="Import File"
                             IsEnabled="False"/>
-            <MenuFlyoutItem x:Name="menuItemExport"
-                            Text="Export Project"
-                            Clicked="NavBarFile_Export"
+            <MenuFlyoutSeparator/>
+            <MenuFlyoutItem Text="Export Project"
                             IsEnabled="False"/>
-            <MenuFlyoutItem Text="Exit"
-                            Clicked="NavBarFile_Exit"/>
+            <MenuFlyoutSeparator/>
+            <MenuFlyoutItem Text="Close"/>
         </MenuBarItem>
 
-        <!-- Help Menu Bar Item -->
         <MenuBarItem Text="Help">
-            <MenuFlyoutItem Text="Settings"
-                            Clicked="NavBarHelp_Settings"/>
-            <MenuFlyoutItem Text="Help"
-                            Clicked="NavBarHelp_Help"/>
+            <MenuFlyoutItem Text="Report Bug"/>
+            <MenuFlyoutSeparator/>
+            <MenuFlyoutItem Text="Settings"/>
+            <MenuFlyoutSeparator/>
+            <MenuFlyoutItem Text="Help"/>
         </MenuBarItem>
     </ContentPage.MenuBarItems>
 
-    <VerticalStackLayout>
-        <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
-            <Button Text="Dialogue File"
-                Clicked="ModElement_AddDialogue"/>
-            <Button Text="Scripts File"
-                Clicked="ModElement_AddScript"/>
-            <Button Text="Installation File"
-                Clicked="ModElement_AddInstallation"/>
-        </HorizontalStackLayout>
+    <ScrollView>
+        <VerticalStackLayout Padding="30,0" Spacing="25">
 
-        <Label x:Name="target" Text="Hello" FontSize="25" VerticalOptions="Center" HorizontalOptions="Center" />
-    </VerticalStackLayout>
+        <!-- Folder Selection Buttons -->
+            <HorizontalStackLayout Spacing="25" Padding="0" HorizontalOptions="Center">
+                <Button Text="Dialogue" FontSize="36" FontFamily="bold"/>
+                <Button Text="Scripts" FontSize="36" FontFamily="bold"/>
+                <Button Text="Installation" FontSize="36" FontFamily="bold"/>
+            </HorizontalStackLayout>
+            
+        <!-- Folder Directory and Mod Element Manipulation -->
+            <HorizontalStackLayout Spacing="35" Padding="15" HorizontalOptions="Center">
+                <local:FolderDirectory HorizontalOptions="Start"
+                                       x:Name="lv_FolderDirectory"/>
+                <local:ModElements HorizontalOptions="End"
+                                   x:Name="lv_ModElements"/>
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
 
 </ContentPage>

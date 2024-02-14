@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TemplateBGMT.UI_Elements.FolderDirectory"
+             x:Name="class_FolderDirectory">
+    <VerticalStackLayout>
+        <!--<Border BackgroundColor="WhiteSmoke" Stroke="Black" StrokeThickness="3">
+            <Label Text="Folder Directory" FontSize="36" HorizontalOptions="Center"/>
+        </Border>-->
+        <!-- Folder Directory Navigation Buttons -->
+        <HorizontalStackLayout Spacing="15" Padding="15" HorizontalOptions="Center">
+            <Button Text="Add" FontSize="24"
+                    Clicked="AddFileFolderDirectory"/>
+            <Button Text="Load" FontSize="24"
+                    Clicked="LoadFileFolderDirectory"/>
+            <Button Text="Delete" FontSize="24"
+                    Clicked="DeleteFileFolderDirectory"/>
+        </HorizontalStackLayout>
+        
+        <!-- Folder Directory List View -->
+        <Border Stroke="Black"
+        StrokeThickness="3">
+            <ListView x:Name="lv_FolderDirectory"
+                      Header="Folder Directory"
+                      BackgroundColor="WhiteSmoke"
+                      MinimumWidthRequest="300"
+                      MinimumHeightRequest="550"
+                      MaximumWidthRequest="350"
+                      MaximumHeightRequest="750"/>
+        </Border>
+    </VerticalStackLayout>
+</ContentView>

@@ -1,7 +1,7 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace BGMT
+namespace TemplateBGMT
 {
     public class Program
     {
