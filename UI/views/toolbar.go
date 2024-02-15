@@ -8,9 +8,9 @@ import (
 )
 
 // CreateToolbar creates and returns a configured toolbar widget
-func CreateToolbar(window fyne.Window) *fyne.Container {
+func CreateToolbar(directoryPath string, window fyne.Window) *fyne.Container {
 	homeButton := widget.NewButton("Home", func() {
-		NavigateTo(window, MakeHomeView)
+		NavigateTo(window, directoryPath, MakeHomeView)
 	})
 	exportButton := widget.NewButton("Export", func() {
 		dialog.ShowInformation("Information", "WIP: Clicking this will display a confirmation to user.\n"+

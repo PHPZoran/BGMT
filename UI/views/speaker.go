@@ -1,19 +1,19 @@
 package views
 
 import (
+	"UI/components"
+	"UI/utils"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	"goTesting/components"
-	"goTesting/utils"
 	"log"
 )
 
-func MakeSpeakerView(window fyne.Window) fyne.CanvasObject {
-	toolbar := CreateToolbar(window)
+func MakeSpeakerView(directoryPath string, window fyne.Window) fyne.CanvasObject {
+	toolbar := CreateToolbar(directoryPath, window)
 
 	contentLabel := widget.NewLabel("Preview")
 	utils.LoadFileContent("dialogue_skeleton.txt", contentLabel)
@@ -98,7 +98,7 @@ func MakeSpeakerView(window fyne.Window) fyne.CanvasObject {
 			return
 		}
 		components.SaveFile(CreatureID, "dialogue", extension, window)
-		NavigateTo(window, MakeHomeView)
+		NavigateTo(window, directoryPath, MakeHomeView)
 	})
 	btnToSave.Hide()
 

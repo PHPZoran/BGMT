@@ -1,4 +1,4 @@
-module goTesting
+module UI
 
 go 1.18
 

@@ -1,21 +1,25 @@
 package main
 
 import (
+	"UI/components"
+	"UI/utils"
+	"UI/views"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
-	"goTesting/components"
-	"goTesting/utils"
 )
 
-var selectedDirectoryPath string
+type AppState struct {
+	SelectedDirectoryPath string
+}
 
 func main() {
 	myApp := app.New()
 	myWindow := myApp.NewWindow("File Tree Viewer")
-
+	state := &AppState{}
 	content := widget.NewLabel("Select a directory...")
 
 	// Button to allow user to select a directory
@@ -24,35 +28,40 @@ func main() {
 			if uri == nil || err != nil {
 				return
 			}
-			selectedDirectoryPath = uri.Path() // Store the selected directory path globally
-			tree := utils.CreateFileTree(selectedDirectoryPath, func(selected string) {
-				content.SetText("Selected: " + selected)
-			})
-			myWindow.SetContent(container.NewHSplit(tree, content)) // Update the window content with the new tree
+			state.SelectedDirectoryPath = uri.Path() // Store the selected directory path globally
+
+			homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
+			myWindow.SetContent(homeView)
 		}, myWindow)
 	})
 
 	newProjectBtn := widget.NewButton("New Project", func() {
 		utils.PromptForProjectName(myWindow, func(newPath string) {
-			selectedDirectoryPath = newPath // Update the global variable with the new path
+			state.SelectedDirectoryPath = newPath // Update the global variable with the new path
 			templatePath := "dialogue_temp.txt"
-			components.MakeNewFile(templatePath, selectedDirectoryPath, myWindow)
+			components.MakeNewFile(templatePath, state.SelectedDirectoryPath, myWindow)
 
-			tree := utils.CreateFileTree(selectedDirectoryPath, func(selected string) {
-				content.SetText("Selected: " + selected)
-			})
-			myWindow.SetContent(container.NewHSplit(tree, content)) // Update the window content with the new tree
+			homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
+			myWindow.SetContent(homeView) // Update the window content with the new tree
 		})
 	})
 
 	// Initial content with the select directory button
 	initialContent := container.NewVBox(
+		layout.NewSpacer(),
 		openProjectBtn,
 		newProjectBtn,
 		content,
+		layout.NewSpacer(),
 	)
 
-	myWindow.SetContent(initialContent)
+	paddedContent := container.NewHBox(
+		layout.NewSpacer(),
+		initialContent,
+		layout.NewSpacer(),
+	)
+
+	myWindow.SetContent(paddedContent)
 	myWindow.Resize(fyne.NewSize(1280, 800))
 	myWindow.ShowAndRun()
 }

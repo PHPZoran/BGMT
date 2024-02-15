@@ -1,16 +1,16 @@
 package views
 
 import (
+	"UI/components"
+	"UI/utils"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
-	"goTesting/components"
-	"goTesting/utils"
 )
 
-func MakeDialogueView(window fyne.Window) fyne.CanvasObject {
-	toolbar := CreateToolbar(window)
+func MakeDialogueView(directoryPath string, window fyne.Window) fyne.CanvasObject {
+	toolbar := CreateToolbar(directoryPath, window)
 
 	//Setting the display box
 	contentLabel := widget.NewLabel("Preview")
@@ -19,13 +19,13 @@ func MakeDialogueView(window fyne.Window) fyne.CanvasObject {
 
 	//Buttons for Initial Dialogue options
 	btnToNextDialoguePage := widget.NewButton("Next", func() {
-		NavigateTo(window, MakeSpeakerView)
+		NavigateTo(window, directoryPath, MakeSpeakerView)
 	})
 	// Hide Next button until New or Load is clicked.
 	btnToNextDialoguePage.Hide()
 
 	btnForNewDialogue := widget.NewButton("New", func() {
-		components.MakeNewFile(window)
+		components.MakeNewFile("dialogue_skeleton.txt", directoryPath, window)
 		utils.LoadFileContent("dialogue_skeleton.txt", contentLabel)
 		btnToNextDialoguePage.Show()
 	})

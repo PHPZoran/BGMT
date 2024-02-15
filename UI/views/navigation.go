@@ -5,6 +5,6 @@ import (
 )
 
 // NavigateTo takes a fyne window and a destination view function and sets the window content to the new view.
-func NavigateTo(window fyne.Window, viewFunc func(fyne.Window) fyne.CanvasObject) {
-	window.SetContent(viewFunc(window))
+func NavigateTo(window fyne.Window, directoryPath string, viewFunc func(string, fyne.Window) fyne.CanvasObject) {
+	window.SetContent(viewFunc(directoryPath, window))
 }
