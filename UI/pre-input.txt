@@ -1,0 +1,76 @@
+//Script File
+
+IF
+Dead("$speakerID")
+GlobalLT("$variable","$type","$value") //user set
+THEN
+RESPONSE #100
+SetGlobal("$variable","$type","$value") //user set
+AddJournalEntry(@10016,QUEST)
+Continue()
+END
+
+IF
+    See(NearestEnemyOf(Myself))
+ THEN
+ RESPONSE #100
+	Attack(NearestEnemyOf(Myself))
+	Continue()
+END
+
+
+//Dialogue File
+
+CHAIN IF
+~See("$creatureID")
+IsValidForPartyDialogue("creatureID")
+RandomNum(2,2)
+Global("$variable","$type",$value)~ THEN $creatureID "$dialogueID") //input from user
+@149
+DO ~SetGlobal("$variable2","$type2",$value2)~  //input from user
+== $creatureID @150
+EXIT
+
+///
+$creatureID parameters (1-8 chars)
+LOCALS/GLOBAL, -255 to 255
+generate "$dialogueID"
+///
+
+// ShowCustomInputDialog displays a dialog with dynamic text inputs based on the template.
+func ShowCustomInputDialog(window fyne.Window, inputs *UserInputs) {
+	content := container.NewHBox()
+
+	input1 := CreateLabeledTextInput("Input 1", "Enter value for Input 1", func(value string) {
+		inputs.Variable = value
+	})
+	content.Add(input1)
+
+	input2 := CreateLabeledTextInput("Input 2", "Enter value for Input 2", func(value string) {
+		inputs.Type = value
+	})
+	content.Add(input2)
+
+	input3 := CreateLabeledTextInput("Input 3", "Enter value for Input 3", func(value string) {
+		inputs.Value = value
+	})
+	content.Add(input3)
+
+	dialog.ShowCustom("Enter Inputs", "Submit", content, window)
+}
+
+// InsertUserInput replaces a placeholder in "dialogue_example.txt" with a new value.
+func InsertUserInput(placeholder, newValue string) error {
+	// Read the content of the file
+	content, err := ioutil.ReadFile("working.tmp")
+	if err != nil {
+		return err
+	}
+
+	// Replace the placeholder with the new value
+	newContent := strings.ReplaceAll(string(content), placeholder, newValue)
+
+	// Write the updated content back to the file
+	// You can change "dialogue_example.txt" to a new file name if you want to create a new file
+	return ioutil.WriteFile("working.tmp", []byte(newContent), 0644)
+}
