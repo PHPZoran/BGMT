@@ -89,6 +89,30 @@ func PromptForProjectName(window fyne.Window, onCreate func(newPath string)) {
 				return
 			}
 
+			// Step 4: Create indicative BGM project .ini file
+			if err := os.WriteFile(projectPath+"/BGM.ini", []byte(""), 0755); err != nil {
+				dialog.ShowError(err, window)
+				return
+			}
+
+			// Step 5: Create associated project folder directories: Dialogue, Script, Installation, Translation
+			if err := os.Mkdir(projectPath+"/Dialogue", 0755); err != nil {
+				dialog.ShowError(err, window)
+				return
+			}
+			if err := os.Mkdir(projectPath+"/Script", 0755); err != nil {
+				dialog.ShowError(err, window)
+				return
+			}
+			if err := os.Mkdir(projectPath+"/Installation", 0755); err != nil {
+				dialog.ShowError(err, window)
+				return
+			}
+			if err := os.Mkdir(projectPath+"/Translation", 0755); err != nil {
+				dialog.ShowError(err, window)
+				return
+			}
+
 			// Invoke the callback with the new project path
 			onCreate(projectPath)
 		}, window)
