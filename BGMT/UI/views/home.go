@@ -14,7 +14,7 @@ func MakeHomeView(directoryPath string, window fyne.Window) fyne.CanvasObject {
 	})
 
 	btnToDialogue := widget.NewButton("Dialogue Mod", func() {
-		NavigateTo(window, directoryPath, MakeDialogueView)
+		//NavigateTo(window, directoryPath, MakeDialogueView(directoryPath, window))
 	})
 	btnToScripts := widget.NewButton("Scripts Mod", func() {
 		//utils.NavigateToScripts(window)
@@ -46,7 +46,6 @@ func MakeHomeView(directoryPath string, window fyne.Window) fyne.CanvasObject {
 		layout.NewSpacer(),
 		layout.NewSpacer(),
 	)
-
 	split := container.NewHSplit(tree, vboxBtnLayout)
 	split.Offset = .15
 

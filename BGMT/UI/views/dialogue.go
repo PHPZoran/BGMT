@@ -11,8 +11,7 @@ import (
 
 func MakeDialogueView(directoryPath string, window fyne.Window) fyne.CanvasObject {
 	toolbar := CreateToolbar(directoryPath, window)
-	tree := utils.CreateFileTree(directoryPath, func(selected string) {
-	})
+
 	//Setting the display box
 	contentLabel := widget.NewLabel("Preview")
 	utils.LoadFileContent("dialogue_example.txt", contentLabel)
@@ -66,29 +65,19 @@ func MakeDialogueView(directoryPath string, window fyne.Window) fyne.CanvasObjec
 		contentLabel,
 	)
 
-	grid := container.NewAdaptiveGrid(4,
-		layout.NewSpacer(),
+	grid := container.NewAdaptiveGrid(3,
 		btnOptions,
 		layout.NewSpacer(),
 		filePreview,
 	)
 
 	vbox := container.NewVBox(
-		layout.NewSpacer(),
+		toolbar,
 		grid,
 		padButtonBar2,
 	)
 
-	vbox2 := container.NewVBox(
-		toolbar,
-		widget.NewLabel(""),
-		vbox,
-	)
-
-	split := container.NewHSplit(tree, vbox2)
-	split.Offset = .15
-
-	return split
+	return container.NewVBox(vbox)
 }
 
 //DONE: Generate a true skeleton template of dialogue as dialogue_skeleton.txt
