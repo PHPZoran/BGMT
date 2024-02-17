@@ -16,24 +16,25 @@ func MakeDialogueView(directoryPath string, window fyne.Window) fyne.CanvasObjec
 	})
 	//Setting the display box
 	contentLabel := widget.NewLabel("Preview")
-	utils.LoadFileContent("dialogue_example.txt", contentLabel)
 	contentLabel.Wrapping = fyne.TextWrapWord
+	fileContentView := utils.LoadFileContent(directoryPath + "/dialogue_example.txt")
 
 	//Buttons for Initial Dialogue options
 	btnToNextDialoguePage := widget.NewButton("Next", func() {
 		NavigateTo(window, directoryPath, MakeSpeakerView)
 	})
+
 	// Hide Next button until New or Load is clicked.
 	btnToNextDialoguePage.Hide()
 
 	btnForNewDialogue := widget.NewButton("New", func() {
-		components.MakeNewFile("dialogue_skeleton.txt", directoryPath, window)
-		utils.LoadFileContent("dialogue_skeleton.txt", contentLabel)
+		components.MakeNewFile(directoryPath+"/dialogue_temp.txt", directoryPath, window)
+		utils.UpdateFileContent(directoryPath + "/dialogue_skeleton.txt")
 		btnToNextDialoguePage.Show()
 	})
 
 	btnForLoadModFile := components.CreateLoadModButton(window, ".d", func() {
-		utils.LoadFileContent("working.tmp", contentLabel)
+		utils.UpdateFileContent(directoryPath + "/working.tmp")
 		btnToNextDialoguePage.Show()
 	})
 
@@ -64,29 +65,32 @@ func MakeDialogueView(directoryPath string, window fyne.Window) fyne.CanvasObjec
 
 	filePreview := container.NewVBox(
 		layout.NewSpacer(),
-		contentLabel,
+		fileContentView,
+		layout.NewSpacer(),
 	)
 
 	grid := container.NewAdaptiveGrid(4,
 		layout.NewSpacer(),
 		btnOptions,
 		layout.NewSpacer(),
-		filePreview,
+		layout.NewSpacer(),
 	)
 
-	vbox := container.NewVBox(
+	vBox := container.NewVBox(
 		layout.NewSpacer(),
 		grid,
 		padButtonBar2,
 	)
 
-	vbox2 := container.NewVBox(
+	vBox2 := container.NewVBox(
 		toolbar,
 		widget.NewLabel(""),
-		vbox,
+		vBox,
 	)
 
-	split := container.NewHSplit(tree, vbox2)
+	hBox := container.NewHBox(vBox2, filePreview)
+
+	split := container.NewHSplit(tree, hBox)
 	split.Offset = .15
 
 	return split

@@ -14,10 +14,12 @@ import (
 
 func MakeSpeakerView(directoryPath string, window fyne.Window) fyne.CanvasObject {
 	toolbar := CreateToolbar(directoryPath, window)
+	tree := utils.CreateFileTree(directoryPath, func(selected string) {
+	})
 
 	contentLabel := widget.NewLabel("Preview")
-	utils.LoadFileContent("dialogue_skeleton.txt", contentLabel)
 	contentLabel.Wrapping = fyne.TextWrapWord
+	fileContentView := utils.LoadFileContent(directoryPath + "/dialogue_skeleton.txt")
 
 	var CreatureID string
 	inputSpeakerIDBox := components.CreateLabeledTextInput("CreatureID example: KINGKONG", func(inputValue string) {
@@ -73,6 +75,7 @@ func MakeSpeakerView(directoryPath string, window fyne.Window) fyne.CanvasObject
 	vbox1 := container.NewVBox(
 		layout.NewSpacer(),
 		contentLabel,
+		fileContentView,
 	)
 
 	vbox2 := container.NewVBox(
@@ -115,11 +118,11 @@ func MakeSpeakerView(directoryPath string, window fyne.Window) fyne.CanvasObject
 		}
 		log.Printf("Inserting UserInputs: %+v\n", userInputs)
 		// Insert template UserInputs into temp file
-		templateErr := components.InsertUserInputs("working.tmp", userInputs)
+		templateErr := components.InsertUserInputs(directoryPath+"/working.tmp", userInputs)
 		if templateErr != nil {
 			return
 		}
-		utils.LoadFileContent("working.tmp", contentLabel)
+		utils.UpdateFileContent(directoryPath + "/working.tmp")
 		btnToSave.Show()
 	})
 
@@ -161,6 +164,8 @@ func MakeSpeakerView(directoryPath string, window fyne.Window) fyne.CanvasObject
 		grid,
 		padToolbar2,
 	)
+	split := container.NewHSplit(tree, vbox)
+	split.Offset = .15
 
-	return container.NewVBox(vbox)
+	return container.NewVBox(split)
 }

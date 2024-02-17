@@ -7,6 +7,8 @@ import (
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
 	"io/ioutil"
+	"log"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -115,8 +117,9 @@ func MakeNewFile(templatePath, projectDir string, window fyne.Window) {
 // InsertUserInputs replaces placeholders in a file with user inputs.
 func InsertUserInputs(filePath string, inputs *UserInputs) error {
 
-	content, err := ioutil.ReadFile(filePath)
+	content, err := os.ReadFile(filePath)
 	if err != nil {
+		log.Println("ERROR: Something is wrong")
 		return err
 	}
 
@@ -134,7 +137,16 @@ func InsertUserInputs(filePath string, inputs *UserInputs) error {
 	newContent = strings.ReplaceAll(newContent, "$dialogueID", inputs.DialogueID)
 
 	// Write the updated content back to the file
-	return ioutil.WriteFile(filePath, []byte(newContent), 0644)
+	if err := os.WriteFile(filePath, []byte(newContent), 0644); err != nil {
+		log.Printf("Failed to write to file '%s': %v", filePath, err)
+		return err
+	}
+	log.Printf("Successfully wrote to file '%s'", filePath)
+	// After writing to the file
+	readBackContent, _ := os.ReadFile(filePath)
+	log.Printf("Content after write: %s", string(readBackContent))
+
+	return nil
 }
 
 type UserInputs struct {
