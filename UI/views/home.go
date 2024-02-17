@@ -10,7 +10,7 @@ import (
 
 func MakeHomeView(directoryPath string, window fyne.Window) fyne.CanvasObject {
 	toolbar := CreateToolbar(directoryPath, window)
-	tree := utils.CreateFileTree(directoryPath, func(selected string) {
+	tree := utils.CreateFileTree(utils.GetParentDirectory(), func(selected string) {
 	})
 
 	btnToDialogue := widget.NewButton("Dialogue Mod", func() {
