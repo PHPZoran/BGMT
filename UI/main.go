@@ -3,12 +3,14 @@ package main
 import (
 	"UI/utils"
 	"UI/views"
+	"errors"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
+	"os"
 )
 
 type AppState struct {
@@ -19,7 +21,7 @@ type AppState struct {
 
 func main() {
 	myApp := app.New()
-	myWindow := myApp.NewWindow("File Tree Viewer")
+	myWindow := myApp.NewWindow("Baldur's Gate Mod Tool")
 	state := &AppState{}
 	content := widget.NewLabel("Select a directory...")
 
@@ -32,6 +34,11 @@ func main() {
 				return
 			}
 			state.SelectedDirectoryPath = uri.Path() // Store the selected directory path globally
+
+			if _, err := os.Stat(state.SelectedDirectoryPath + "/BGM.ini"); err != nil {
+				dialog.ShowError(errors.New("the selected folder is not a BGM Project folder"), myWindow)
+				return
+			}
 
 			homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
 			myWindow.SetContent(homeView)
@@ -55,9 +62,9 @@ func main() {
 	// Initial content with the select directory button
 	initialContent := container.NewVBox(
 		layout.NewSpacer(),
-		openProjectBtn,
-		newProjectBtn,
 		content,
+		newProjectBtn,
+		openProjectBtn,
 		layout.NewSpacer(),
 	)
 

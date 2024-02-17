@@ -10,6 +10,7 @@ import (
 )
 
 func MakeDialogueView(directoryPath string, window fyne.Window) fyne.CanvasObject {
+	directoryPath += "/Dialogue"
 	toolbar := CreateToolbar(directoryPath, window)
 	tree := utils.CreateFileTree(directoryPath, func(selected string) {
 	})
