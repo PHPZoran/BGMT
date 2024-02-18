@@ -10,16 +10,43 @@ import (
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"log"
+	"path/filepath"
 )
 
 func MakeSpeakerView(directoryPath string, window fyne.Window) fyne.CanvasObject {
+	//Set Toolbar --- Remove?
 	toolbar := CreateToolbar(directoryPath, window)
-	tree := utils.CreateFileTree(directoryPath, func(selected string) {
+
+	//Setting default variables
+	newDirectoryPath := filepath.Join(directoryPath, "Dialogue")
+	skeletonFilePath := filepath.Join(newDirectoryPath, "dialogue_skeleton.txt")
+	var workingFilePath = filepath.Join(newDirectoryPath, "working.tmp") // Ensure this is mutable
+
+	// Create the file tree with double-click handling
+	tree := utils.CreateFileTree(newDirectoryPath, func(selected string) {
+		// Single click actions, can go here.
+		fullPath := filepath.Join(newDirectoryPath, selected)
+		utils.UpdateFileContent(fullPath)
+		// Confirmation dialog
+		dialog.ShowConfirm("Change File Confirmation", "Are you sure? Any changes will be lost?",
+			func(confirm bool) {
+				if confirm {
+					// If user confirms, update workingFilePath and refresh content view
+					workingFilePath = fullPath
+					utils.UpdateFileContent(workingFilePath)
+				}
+				utils.UpdateFileContent(skeletonFilePath)
+			}, window)
+	}, func(selected string) {
+		// Handle double-click on a file
 	})
 
+	//Setting the display box
 	contentLabel := widget.NewLabel("Preview")
 	contentLabel.Wrapping = fyne.TextWrapWord
-	fileContentView := utils.LoadFileContent(directoryPath + "/dialogue_skeleton.txt")
+
+	// Load and display the default file content
+	fileContentView := utils.LoadFileContent(skeletonFilePath)
 
 	var CreatureID string
 	inputSpeakerIDBox := components.CreateLabeledTextInput("CreatureID example: KINGKONG", func(inputValue string) {
@@ -118,11 +145,11 @@ func MakeSpeakerView(directoryPath string, window fyne.Window) fyne.CanvasObject
 		}
 		log.Printf("Inserting UserInputs: %+v\n", userInputs)
 		// Insert template UserInputs into temp file
-		templateErr := components.InsertUserInputs(directoryPath+"/working.tmp", userInputs)
+		templateErr := components.InsertUserInputs(workingFilePath, userInputs)
 		if templateErr != nil {
 			return
 		}
-		utils.UpdateFileContent(directoryPath + "/working.tmp")
+		utils.UpdateFileContent(workingFilePath)
 		btnToSave.Show()
 	})
 
@@ -165,7 +192,7 @@ func MakeSpeakerView(directoryPath string, window fyne.Window) fyne.CanvasObject
 		padToolbar2,
 	)
 	split := container.NewHSplit(tree, vbox)
-	split.Offset = .15
-
+	split.Offset = .3
+	//TODO: FIX THE LAYOUT SO TREE IS VIEWABLE
 	return container.NewVBox(split)
 }

@@ -39,12 +39,8 @@ func UpdateFileContent(filename string) {
 
 // NewPaddedLabel creates a new label with specified padding, background, and text color.
 func NewPaddedLabel(label *widget.Label) *fyne.Container {
-	//label := widget.NewLabel(data)
-	//label.Wrapping = fyne.TextWrapWord // Enable word wrapping
-
 	// Create a background rectangle with the desired color
 	background := canvas.NewRectangle(theme.InputBackgroundColor())
-	//background.FillColor = color.White
 
 	// Wrap the label in a scroll container to allow scrolling if the content overflows.
 	scrollContainer := container.NewScroll(container.NewStack(background, label))

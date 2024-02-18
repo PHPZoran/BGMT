@@ -5,36 +5,64 @@ import (
 	"UI/utils"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
+	"io/ioutil"
+	"path/filepath"
 )
 
 func MakeDialogueView(directoryPath string, window fyne.Window) fyne.CanvasObject {
-	directoryPath += "/Dialogue"
+	//Set Toolbar
 	toolbar := CreateToolbar(directoryPath, window)
-	tree := utils.CreateFileTree(directoryPath, func(selected string) {
-	})
+
+	//Setting default variables
+	newDirectoryPath := filepath.Join(directoryPath, "Dialogue")
+	defaultFilePath := filepath.Join(newDirectoryPath, "dialogue_example.txt")
+	templateFilePath := filepath.Join(newDirectoryPath, "dialogue_temp.txt")
+	skeletonFilePath := filepath.Join(newDirectoryPath, "dialogue_skeleton.txt")
+	workingFilePath := filepath.Join(newDirectoryPath, "working.tmp")
+
 	//Setting the display box
 	contentLabel := widget.NewLabel("Preview")
 	contentLabel.Wrapping = fyne.TextWrapWord
-	fileContentView := utils.LoadFileContent(directoryPath + "/dialogue_example.txt")
+
+	// Load and display the default file content
+	fileContentView := utils.LoadFileContent(defaultFilePath)
 
 	//Buttons for Initial Dialogue options
 	btnToNextDialoguePage := widget.NewButton("Next", func() {
 		NavigateTo(window, directoryPath, MakeSpeakerView)
 	})
 
+	// Create the file tree with double-click handling
+	tree := utils.CreateFileTree(newDirectoryPath, func(selected string) {
+		// Single click actions, can go here.
+		fullPath := filepath.Join(newDirectoryPath, selected)
+		content, err := ioutil.ReadFile(fullPath)
+		if err != nil {
+			dialog.ShowError(err, window)
+			return
+		}
+		// Show file content in a dialog
+		fileContentDialog := dialog.NewCustom("File Content", "Close", widget.NewLabel(string(content)), window)
+		fileContentDialog.Show()
+		btnToNextDialoguePage.Show()
+	}, func(selected string) {
+		// Handle double-click on a file
+	})
+
 	// Hide Next button until New or Load is clicked.
 	btnToNextDialoguePage.Hide()
 
 	btnForNewDialogue := widget.NewButton("New", func() {
-		components.MakeNewFile(directoryPath+"/dialogue_temp.txt", directoryPath, window)
-		utils.UpdateFileContent(directoryPath + "/dialogue_skeleton.txt")
+		components.MakeNewFile(templateFilePath, newDirectoryPath, window)
+		utils.UpdateFileContent(skeletonFilePath)
 		btnToNextDialoguePage.Show()
 	})
 
 	btnForLoadModFile := components.CreateLoadModButton(window, ".d", func() {
-		utils.UpdateFileContent(directoryPath + "/working.tmp")
+		utils.UpdateFileContent(workingFilePath)
 		btnToNextDialoguePage.Show()
 	})
 
@@ -95,12 +123,3 @@ func MakeDialogueView(directoryPath string, window fyne.Window) fyne.CanvasObjec
 
 	return split
 }
-
-//DONE: Generate a true skeleton template of dialogue as dialogue_skeleton.txt
-//DONE: Make sure NEWBTN creates the "working.tmp". Should be a copy of dialogue_skeleton.txt
-//DONE: Display dialogue_example.txt with real values initially
-//DONE: Refactor naming of speakerID to creatureID.
-//DONE: generate dialogueID using random 6 char and numbers.
-//DONE: Set parameters for creatureID and variable, numerical parameters for value, "LOCALS" or "GLOBAL" options for type.
-//TODO: Help Button on speaker.go
-//DONE: Change triggerChoices to then display more options on current window (not a pop-up)
