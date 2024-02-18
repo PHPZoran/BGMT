@@ -7,6 +7,8 @@ import (
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
 	"io/ioutil"
+	"log"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -115,26 +117,52 @@ func MakeNewFile(templatePath, projectDir string, window fyne.Window) {
 // InsertUserInputs replaces placeholders in a file with user inputs.
 func InsertUserInputs(filePath string, inputs *UserInputs) error {
 
-	content, err := ioutil.ReadFile(filePath)
+	content, err := os.ReadFile(filePath)
 	if err != nil {
+		log.Println("ERROR: Something is wrong")
 		return err
 	}
 
 	// Convert the content to a string for replacement
 	newContent := string(content)
 
-	// Replace each placeholder with the corresponding value from UserInputs
-	newContent = strings.ReplaceAll(newContent, "$variable", inputs.Variable)
-	newContent = strings.ReplaceAll(newContent, "$type", inputs.Type)
-	newContent = strings.ReplaceAll(newContent, "$value", inputs.Value)
-	newContent = strings.ReplaceAll(newContent, "$var", inputs.Variable2)
-	newContent = strings.ReplaceAll(newContent, "$typ", inputs.Type2)
-	newContent = strings.ReplaceAll(newContent, "$val", inputs.Value2)
-	newContent = strings.ReplaceAll(newContent, "$creatureID", inputs.CreatureID)
-	newContent = strings.ReplaceAll(newContent, "$dialogueID", inputs.DialogueID)
+	// Replace each placeholder with the corresponding value from UserInputs, if not empty
+	if inputs.Variable != "" {
+		newContent = strings.ReplaceAll(newContent, "$variable", inputs.Variable)
+	}
+	if inputs.Type != "" {
+		newContent = strings.ReplaceAll(newContent, "$type", inputs.Type)
+	}
+	if inputs.Value != "" {
+		newContent = strings.ReplaceAll(newContent, "$value", inputs.Value)
+	}
+	if inputs.Variable2 != "" {
+		newContent = strings.ReplaceAll(newContent, "$var", inputs.Variable2)
+	}
+	if inputs.Type2 != "" {
+		newContent = strings.ReplaceAll(newContent, "$typ", inputs.Type2)
+	}
+	if inputs.Value2 != "" {
+		newContent = strings.ReplaceAll(newContent, "$val", inputs.Value2)
+	}
+	if inputs.CreatureID != "" {
+		newContent = strings.ReplaceAll(newContent, "$creatureID", inputs.CreatureID)
+	}
+	if inputs.DialogueID != "" {
+		newContent = strings.ReplaceAll(newContent, "$dialogueID", inputs.DialogueID)
+	}
 
 	// Write the updated content back to the file
-	return ioutil.WriteFile(filePath, []byte(newContent), 0644)
+	if err := os.WriteFile(filePath, []byte(newContent), 0644); err != nil {
+		log.Printf("Failed to write to file '%s': %v", filePath, err)
+		return err
+	}
+	log.Printf("Successfully wrote to file '%s'", filePath)
+	// After writing to the file
+	readBackContent, _ := os.ReadFile(filePath)
+	log.Printf("Content after write: %s", string(readBackContent))
+
+	return nil
 }
 
 type UserInputs struct {

@@ -1,7 +1,7 @@
 //Script File
 
 IF
-Dead("$speakerID")
+Dead("$creatureID")
 GlobalLT("$variable","$type","$value") //user set
 THEN
 RESPONSE #100

@@ -10,14 +10,46 @@ import (
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"log"
+	"path/filepath"
 )
 
 func MakeSpeakerView(directoryPath string, window fyne.Window) fyne.CanvasObject {
-	toolbar := CreateToolbar(directoryPath, window)
+	//Setting default variables
+	newDirectoryPath := filepath.Join(directoryPath, "Dialogue")
+	skeletonFilePath := filepath.Join(newDirectoryPath, "dialogue_skeleton.txt")
+	var workingFilePath = filepath.Join(newDirectoryPath, "working.tmp") // Ensure this is mutable
 
+	//Set Toolbar --- Remove?
+	speakerID := ""
+	modType := "Dialogue"
+	var extension = ".d"
+	toolbar := CreateToolbar(directoryPath, window, speakerID, modType, extension, newDirectoryPath)
+
+	// Create the file tree with double-click handling
+	tree := utils.CreateFileTree(newDirectoryPath, func(selected string) {
+		// Single click actions, can go here.
+		fullPath := filepath.Join(newDirectoryPath, selected)
+		utils.UpdateFileContent(fullPath)
+		// Confirmation dialog
+		dialog.ShowConfirm("Change File Confirmation", "Are you sure? Any changes will be lost?",
+			func(confirm bool) {
+				if confirm {
+					// If user confirms, update workingFilePath and refresh content view
+					workingFilePath = fullPath
+					utils.UpdateFileContent(workingFilePath)
+				}
+				utils.UpdateFileContent(workingFilePath)
+			}, window)
+	}, func(selected string) {
+		// Handle double-click on a file
+	})
+
+	//Setting the display box
 	contentLabel := widget.NewLabel("Preview")
-	utils.LoadFileContent("dialogue_skeleton.txt", contentLabel)
 	contentLabel.Wrapping = fyne.TextWrapWord
+
+	// Load and display the default file content
+	fileContentView := utils.LoadFileContent(skeletonFilePath)
 
 	var CreatureID string
 	inputSpeakerIDBox := components.CreateLabeledTextInput("CreatureID example: KINGKONG", func(inputValue string) {
@@ -69,35 +101,13 @@ func MakeSpeakerView(directoryPath string, window fyne.Window) fyne.CanvasObject
 		variableBoxesContainer.Refresh()
 	})
 
-	// VBox containing your button and label
-	vbox1 := container.NewVBox(
-		layout.NewSpacer(),
-		contentLabel,
-	)
-
-	vbox2 := container.NewVBox(
-		layout.NewSpacer(),
-		layout.NewSpacer(),
-		inputSpeakerIDBox,
-		triggersChoiceBox,
-		variableBoxesContainer,
-		layout.NewSpacer(),
-	)
-
-	grid := container.NewAdaptiveGrid(3,
-		vbox2,
-		layout.NewSpacer(),
-		vbox1,
-	)
-
-	var extension = ".d"
 	btnToSave := widget.NewButton("Save", func() {
 		if CreatureID == "" {
 			// Handle the case where speakerID is not set
 			dialog.ShowInformation("Error", "Please enter a Speaker ID", window)
 			return
 		}
-		components.SaveFile(CreatureID, "dialogue", extension, window)
+		components.SaveFile(CreatureID, "dialogue", extension, newDirectoryPath, window)
 		NavigateTo(window, directoryPath, MakeHomeView)
 	})
 	btnToSave.Hide()
@@ -115,11 +125,11 @@ func MakeSpeakerView(directoryPath string, window fyne.Window) fyne.CanvasObject
 		}
 		log.Printf("Inserting UserInputs: %+v\n", userInputs)
 		// Insert template UserInputs into temp file
-		templateErr := components.InsertUserInputs("working.tmp", userInputs)
+		templateErr := components.InsertUserInputs(workingFilePath, userInputs)
 		if templateErr != nil {
 			return
 		}
-		utils.LoadFileContent("working.tmp", contentLabel)
+		utils.UpdateFileContent(workingFilePath)
 		btnToSave.Show()
 	})
 
@@ -130,37 +140,55 @@ func MakeSpeakerView(directoryPath string, window fyne.Window) fyne.CanvasObject
 			window)
 	})
 
-	paddedToolbar2 := container.NewHBox(
+	btnFmtHBox := container.NewAdaptiveGrid(9,
 		layout.NewSpacer(),
 		insertButton,
 		btnToSave,
 		layout.NewSpacer(),
-		layout.NewSpacer(),
-		layout.NewSpacer(),
-		layout.NewSpacer(),
-		layout.NewSpacer(),
-		layout.NewSpacer(),
 	)
 
-	paddedToolbar3 := container.NewHBox(
+	paddedInfoBtn := container.NewHBox(
 		layout.NewSpacer(),
 		infoButton,
 		layout.NewSpacer(),
 	)
 
-	padToolbar2 := container.NewVBox(
+	paddedBtnBox := container.NewVBox(
 		layout.NewSpacer(),
-		paddedToolbar2,
+		btnFmtHBox,
 		layout.NewSpacer(),
 		layout.NewSpacer(),
-		paddedToolbar3,
+		paddedInfoBtn,
+	)
+
+	userInputFmtBox := container.NewVBox(
+		layout.NewSpacer(),
+		inputSpeakerIDBox,
+		triggersChoiceBox,
+		variableBoxesContainer,
+		layout.NewSpacer(),
+		paddedBtnBox,
+		layout.NewSpacer(),
+	)
+
+	contentViewFmtBox := container.NewVBox(
+		layout.NewSpacer(),
+		contentLabel,
+		fileContentView,
+	)
+
+	mainContentBox := container.NewHBox(
+		userInputFmtBox,
+		layout.NewSpacer(),
+		contentViewFmtBox,
 	)
 
 	vbox := container.NewVBox(
 		toolbar,
-		grid,
-		padToolbar2,
+		mainContentBox,
+		layout.NewSpacer(),
 	)
-
-	return container.NewVBox(vbox)
+	split := container.NewHSplit(tree, vbox)
+	split.Offset = .15
+	return container.NewVBox(split)
 }

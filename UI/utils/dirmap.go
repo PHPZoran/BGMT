@@ -6,11 +6,17 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 // CreateFileTree creates and returns a tree view of the directory structure starting from dirPath.
-func CreateFileTree(dirPath string, onSelect func(string)) *widget.Tree {
+func CreateFileTree(dirPath string, onSelect func(string), onDoubleClick func(string)) *widget.Tree {
 	dirMap := make(map[string][]string) // Map from parent path to slice of child paths
+
+	var lastSelected string
+	var clickTimer *time.Timer
+	doubleClickDuration := time.Duration(time.Millisecond) * 100
+
 	var addChildPaths func(string, string)
 
 	// Recursive function to populate dirMap with the directory structure
@@ -57,9 +63,22 @@ func CreateFileTree(dirPath string, onSelect func(string)) *widget.Tree {
 
 	// Set onSelect behavior
 	tree.OnSelected = func(id widget.TreeNodeID) {
-		if onSelect != nil {
-			onSelect(id)
+		if clickTimer != nil {
+			clickTimer.Stop()
 		}
+		clickTimer = time.AfterFunc(doubleClickDuration, func() {
+			if onSelect != nil && lastSelected == id {
+				onSelect(id) // Single-click action
+			}
+		})
+		if lastSelected == id {
+			// Double-click detected
+			clickTimer.Stop()
+			if onDoubleClick != nil {
+				onDoubleClick(id) // Double-click action
+			}
+		}
+		lastSelected = id
 	}
 
 	return tree
