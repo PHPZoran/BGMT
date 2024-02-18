@@ -98,28 +98,6 @@ func MakeSpeakerView(directoryPath string, window fyne.Window) fyne.CanvasObject
 		variableBoxesContainer.Refresh()
 	})
 
-	// VBox containing your button and label
-	vbox1 := container.NewVBox(
-		layout.NewSpacer(),
-		contentLabel,
-		fileContentView,
-	)
-
-	vbox2 := container.NewVBox(
-		layout.NewSpacer(),
-		layout.NewSpacer(),
-		inputSpeakerIDBox,
-		triggersChoiceBox,
-		variableBoxesContainer,
-		layout.NewSpacer(),
-	)
-
-	grid := container.NewAdaptiveGrid(3,
-		vbox2,
-		layout.NewSpacer(),
-		vbox1,
-	)
-
 	var extension = ".d"
 	btnToSave := widget.NewButton("Save", func() {
 		if CreatureID == "" {
@@ -160,39 +138,55 @@ func MakeSpeakerView(directoryPath string, window fyne.Window) fyne.CanvasObject
 			window)
 	})
 
-	paddedToolbar2 := container.NewHBox(
+	btnFmtHBox := container.NewAdaptiveGrid(9,
 		layout.NewSpacer(),
 		insertButton,
 		btnToSave,
 		layout.NewSpacer(),
-		layout.NewSpacer(),
-		layout.NewSpacer(),
-		layout.NewSpacer(),
-		layout.NewSpacer(),
-		layout.NewSpacer(),
 	)
 
-	paddedToolbar3 := container.NewHBox(
+	paddedInfoBtn := container.NewHBox(
 		layout.NewSpacer(),
 		infoButton,
 		layout.NewSpacer(),
 	)
 
-	padToolbar2 := container.NewVBox(
+	paddedBtnBox := container.NewVBox(
 		layout.NewSpacer(),
-		paddedToolbar2,
+		btnFmtHBox,
 		layout.NewSpacer(),
 		layout.NewSpacer(),
-		paddedToolbar3,
+		paddedInfoBtn,
+	)
+
+	userInputFmtBox := container.NewVBox(
+		layout.NewSpacer(),
+		inputSpeakerIDBox,
+		triggersChoiceBox,
+		variableBoxesContainer,
+		layout.NewSpacer(),
+		paddedBtnBox,
+		layout.NewSpacer(),
+	)
+
+	contentViewFmtBox := container.NewVBox(
+		layout.NewSpacer(),
+		contentLabel,
+		fileContentView,
+	)
+
+	mainContentBox := container.NewHBox(
+		userInputFmtBox,
+		layout.NewSpacer(),
+		contentViewFmtBox,
 	)
 
 	vbox := container.NewVBox(
 		toolbar,
-		grid,
-		padToolbar2,
+		mainContentBox,
+		layout.NewSpacer(),
 	)
 	split := container.NewHSplit(tree, vbox)
-	split.Offset = .3
-	//TODO: FIX THE LAYOUT SO TREE IS VIEWABLE
+	split.Offset = .15
 	return container.NewVBox(split)
 }
