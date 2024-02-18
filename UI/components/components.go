@@ -126,15 +126,31 @@ func InsertUserInputs(filePath string, inputs *UserInputs) error {
 	// Convert the content to a string for replacement
 	newContent := string(content)
 
-	// Replace each placeholder with the corresponding value from UserInputs
-	newContent = strings.ReplaceAll(newContent, "$variable", inputs.Variable)
-	newContent = strings.ReplaceAll(newContent, "$type", inputs.Type)
-	newContent = strings.ReplaceAll(newContent, "$value", inputs.Value)
-	newContent = strings.ReplaceAll(newContent, "$var", inputs.Variable2)
-	newContent = strings.ReplaceAll(newContent, "$typ", inputs.Type2)
-	newContent = strings.ReplaceAll(newContent, "$val", inputs.Value2)
-	newContent = strings.ReplaceAll(newContent, "$creatureID", inputs.CreatureID)
-	newContent = strings.ReplaceAll(newContent, "$dialogueID", inputs.DialogueID)
+	// Replace each placeholder with the corresponding value from UserInputs, if not empty
+	if inputs.Variable != "" {
+		newContent = strings.ReplaceAll(newContent, "$variable", inputs.Variable)
+	}
+	if inputs.Type != "" {
+		newContent = strings.ReplaceAll(newContent, "$type", inputs.Type)
+	}
+	if inputs.Value != "" {
+		newContent = strings.ReplaceAll(newContent, "$value", inputs.Value)
+	}
+	if inputs.Variable2 != "" {
+		newContent = strings.ReplaceAll(newContent, "$var", inputs.Variable2)
+	}
+	if inputs.Type2 != "" {
+		newContent = strings.ReplaceAll(newContent, "$typ", inputs.Type2)
+	}
+	if inputs.Value2 != "" {
+		newContent = strings.ReplaceAll(newContent, "$val", inputs.Value2)
+	}
+	if inputs.CreatureID != "" {
+		newContent = strings.ReplaceAll(newContent, "$creatureID", inputs.CreatureID)
+	}
+	if inputs.DialogueID != "" {
+		newContent = strings.ReplaceAll(newContent, "$dialogueID", inputs.DialogueID)
+	}
 
 	// Write the updated content back to the file
 	if err := os.WriteFile(filePath, []byte(newContent), 0644); err != nil {

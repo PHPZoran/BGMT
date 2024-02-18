@@ -14,13 +14,16 @@ import (
 )
 
 func MakeSpeakerView(directoryPath string, window fyne.Window) fyne.CanvasObject {
-	//Set Toolbar --- Remove?
-	toolbar := CreateToolbar(directoryPath, window)
-
 	//Setting default variables
 	newDirectoryPath := filepath.Join(directoryPath, "Dialogue")
 	skeletonFilePath := filepath.Join(newDirectoryPath, "dialogue_skeleton.txt")
 	var workingFilePath = filepath.Join(newDirectoryPath, "working.tmp") // Ensure this is mutable
+
+	//Set Toolbar --- Remove?
+	speakerID := ""
+	modType := "Dialogue"
+	var extension = ".d"
+	toolbar := CreateToolbar(directoryPath, window, speakerID, modType, extension, newDirectoryPath)
 
 	// Create the file tree with double-click handling
 	tree := utils.CreateFileTree(newDirectoryPath, func(selected string) {
@@ -35,7 +38,7 @@ func MakeSpeakerView(directoryPath string, window fyne.Window) fyne.CanvasObject
 					workingFilePath = fullPath
 					utils.UpdateFileContent(workingFilePath)
 				}
-				utils.UpdateFileContent(skeletonFilePath)
+				utils.UpdateFileContent(workingFilePath)
 			}, window)
 	}, func(selected string) {
 		// Handle double-click on a file
@@ -98,14 +101,13 @@ func MakeSpeakerView(directoryPath string, window fyne.Window) fyne.CanvasObject
 		variableBoxesContainer.Refresh()
 	})
 
-	var extension = ".d"
 	btnToSave := widget.NewButton("Save", func() {
 		if CreatureID == "" {
 			// Handle the case where speakerID is not set
 			dialog.ShowInformation("Error", "Please enter a Speaker ID", window)
 			return
 		}
-		components.SaveFile(CreatureID, "dialogue", extension, window)
+		components.SaveFile(CreatureID, "dialogue", extension, newDirectoryPath, window)
 		NavigateTo(window, directoryPath, MakeHomeView)
 	})
 	btnToSave.Hide()

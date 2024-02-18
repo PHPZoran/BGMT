@@ -13,22 +13,25 @@ import (
 )
 
 func MakeDialogueView(directoryPath string, window fyne.Window) fyne.CanvasObject {
-	//Set Toolbar
-	toolbar := CreateToolbar(directoryPath, window)
-
 	//Setting default variables
 	newDirectoryPath := filepath.Join(directoryPath, "Dialogue")
-	defaultFilePath := filepath.Join(newDirectoryPath, "dialogue_example.txt")
-	templateFilePath := filepath.Join(newDirectoryPath, "dialogue_temp.txt")
-	skeletonFilePath := filepath.Join(newDirectoryPath, "dialogue_skeleton.txt")
+	defaultDialogueFilePath := filepath.Join(newDirectoryPath, "dialogue_example.txt")
+	templateDialogueFilePath := filepath.Join(newDirectoryPath, "dialogue_temp.txt")
+	skeletonDialogueFilePath := filepath.Join(newDirectoryPath, "dialogue_skeleton.txt")
 	workingFilePath := filepath.Join(newDirectoryPath, "working.tmp")
+
+	//Set Toolbar
+	speakerID := ""
+	modType := "Dialogue"
+	extension := ".d"
+	toolbar := CreateToolbar(directoryPath, window, speakerID, modType, extension, newDirectoryPath)
 
 	//Setting the display box
 	contentLabel := widget.NewLabel("Preview")
 	contentLabel.Wrapping = fyne.TextWrapWord
 
 	// Load and display the default file content
-	fileContentView := utils.LoadFileContent(defaultFilePath)
+	fileContentView := utils.LoadFileContent(defaultDialogueFilePath)
 
 	//Buttons for Initial Dialogue options
 	btnToNextDialoguePage := widget.NewButton("Next", func() {
@@ -56,13 +59,15 @@ func MakeDialogueView(directoryPath string, window fyne.Window) fyne.CanvasObjec
 	btnToNextDialoguePage.Hide()
 
 	btnForNewDialogue := widget.NewButton("New", func() {
-		components.MakeNewFile(templateFilePath, newDirectoryPath, window)
-		utils.UpdateFileContent(skeletonFilePath)
+		components.MakeNewFile(templateDialogueFilePath, newDirectoryPath, window)
+		utils.UpdateFileContent(skeletonDialogueFilePath)
+		tree.Refresh() //TODO
 		btnToNextDialoguePage.Show()
 	})
 
 	btnForLoadModFile := components.CreateLoadModButton(window, ".d", func() {
 		utils.UpdateFileContent(workingFilePath)
+		tree.Refresh() //TODO
 		btnToNextDialoguePage.Show()
 	})
 

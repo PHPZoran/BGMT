@@ -12,7 +12,11 @@ import (
 )
 
 func MakeHomeView(directoryPath string, window fyne.Window) fyne.CanvasObject {
-	toolbar := CreateToolbar(directoryPath, window)
+	//Set Toolbar
+	speakerID := ""
+	modType := ""
+	var extension = ""
+	toolbar := CreateToolbar(directoryPath, window, speakerID, modType, extension, "")
 
 	// Create the file tree with double-click handling
 	tree := utils.CreateFileTree(directoryPath, func(selected string) {
