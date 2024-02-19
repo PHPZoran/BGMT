@@ -1,29 +1,30 @@
 package utils
 
-func JSONtoWeiDuHelper(mod string, files []string) {
+func JSONtoWeiDuHelper(mod string, zipFolder string, files []string) {
+
 	if mod == "dialogue" {
-		JSONtoWeiDuDialogue(files)
+		JSONtoWeiDuDialogue(zipFolder, files)
 	} else if mod == "script" {
-		JSONtoWeiDuScript(files)
+		//JSONtoWeiDuScript(zipFolder, files)
 	} else if mod == "installation" {
-		JSONtoWeiDuInstallation(files)
+		//JSONtoWeiDuInstallation(zipFolder, files)
 	} else {
-		JSONtoWeiDuTranslation(files)
+		//JSONtoWeiDuTranslation(zipFolder, files)
 	}
 }
 
-func JSONtoWeiDuDialogue(files []string) {
+func JSONtoWeiDuDialogue(zipFolder string, files []string) {
 
 }
 
-func JSONtoWeiDuScript(files []string) {
+func JSONtoWeiDuScript(zipFolder string, files []string) {
 
 }
 
-func JSONtoWeiDuInstallation(files []string) {
+func JSONtoWeiDuInstallation(zipFolder string, files []string) {
 
 }
 
-func JSONtoWeiDuTranslation(files []string) {
+func JSONtoWeiDuTranslation(zipFolder string, files []string) {
 
 }

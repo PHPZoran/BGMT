@@ -32,7 +32,6 @@ func WeiDuFileConversion(window fyne.Window) {
 			return
 		}
 
-		//Roadmapped for large file BGM to WeiDu
 		//WeiDuConversionHelper("dialogue")
 		//WeiDuConversionHelper("script")
 		//WeiDuConversionHelper("installation")
@@ -90,7 +89,7 @@ func WeiDuConversionHelper(mod string) {
 	}
 
 	fmt.Println(files)
-	JSONtoWeiDuHelper(mod, files)
+	//JSONtoWeiDuHelper(mod, files)
 }
 
 //-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=
