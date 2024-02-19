@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/widget"
 	"io"
 	"os"
 )
@@ -18,17 +19,31 @@ func check(e error) {
 //-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=
 
 func WeiDuFileConversion(window fyne.Window) {
-	if CreateZipFolder(GetParentDirectory() + "/TestFolder.zip") {
-		dialog.ShowInformation("Error", "Error Creating Zip Folder", window)
-		return
-	}
+	var filename string
+	entry := widget.NewEntry()
+	entry.SetPlaceHolder("Export Folder Name")
+	nameDialog := dialog.NewCustomConfirm("Export Project Name", "Create", "Cancel", entry, func(b bool) {
+		if !b {
+			return
+		}
 
-	WeiDuConversionHelper("dialogue")
-	WeiDuConversionHelper("script")
-	WeiDuConversionHelper("installation")
-	WeiDuConversionHelper("translation")
+		filename = entry.Text
 
-	dialog.ShowInformation("WeiDu File Status", "WeiDu file conversions are complete.", window)
+		if CreateZipFolder(GetParentDirectory() + "/" + filename + ".zip") {
+			dialog.ShowInformation("Error", "Error Creating Zip Folder", window)
+			return
+		}
+
+		WeiDuConversionHelper("dialogue")
+		WeiDuConversionHelper("script")
+		WeiDuConversionHelper("installation")
+		WeiDuConversionHelper("translation")
+
+		dialog.ShowInformation("WeiDu File Status", "WeiDu file conversions are complete and can be found at:\n\n"+
+			GetParentDirectory()+"/"+filename, window)
+
+	}, window)
+	nameDialog.Show()
 }
 
 //-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=

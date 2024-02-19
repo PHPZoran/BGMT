@@ -13,7 +13,7 @@ func JSONtoWeiDuHelper(mod string, files []string) {
 }
 
 func JSONtoWeiDuDialogue(files []string) {
-	
+
 }
 
 func JSONtoWeiDuScript(files []string) {

@@ -119,3 +119,19 @@ func PromptForProjectName(window fyne.Window, onCreate func(newPath string)) {
 	}, window)
 	nameDialog.Show()
 }
+
+/*
+func PromptForText(window fyne.Window) string {
+
+	entry := widget.NewEntry()
+	entry.SetPlaceHolder("Enter Export Folder Name")
+	nameDialog := dialog.NewCustomConfirm("Export Project Name", "Create", "Cancel", entry, func(b bool) {
+		if !b {
+			return
+		}
+		WeiDuFileConversion(window,entry.Text)
+	}, window)
+	nameDialog.Show()
+
+	return filename
+}*/
