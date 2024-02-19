@@ -39,7 +39,7 @@ func MakeDialogueView(directoryPath string, window fyne.Window) fyne.CanvasObjec
 	})
 
 	// Create the file tree with double-click handling
-	tree := utils.CreateFileTree(newDirectoryPath, func(selected string) {
+	tree := utils.CreateFileTree(directoryPath, func(selected string) {
 		// Single click actions, can go here.
 		fullPath := filepath.Join(newDirectoryPath, selected)
 		content, err := ioutil.ReadFile(fullPath)
@@ -61,13 +61,14 @@ func MakeDialogueView(directoryPath string, window fyne.Window) fyne.CanvasObjec
 	btnForNewDialogue := widget.NewButton("New", func() {
 		components.MakeNewFile(templateDialogueFilePath, newDirectoryPath, window)
 		utils.UpdateFileContent(skeletonDialogueFilePath)
-		tree.Refresh() //TODO
+		tree.Refresh()
 		btnToNextDialoguePage.Show()
+
 	})
 
 	btnForLoadModFile := components.CreateLoadModButton(window, ".d", func() {
 		utils.UpdateFileContent(workingFilePath)
-		tree.Refresh() //TODO
+		tree.Refresh()
 		btnToNextDialoguePage.Show()
 	})
 
