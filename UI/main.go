@@ -3,6 +3,7 @@ package main
 import (
 	"UI/utils"
 	"UI/views"
+	"archive/zip"
 	"errors"
 	"fmt"
 	"fyne.io/fyne/v2"
@@ -11,11 +12,71 @@ import (
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
+	"io"
 	"os"
 )
 
 type AppState struct {
 	SelectedDirectoryPath string
+}
+
+//-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=
+
+// ZipFiles compresses one or more files into a zip archive.
+// Credit: https://golangcode.com/create-zip-files-in-go/
+func ZipFiles(filename string, files []string) error {
+	newZipFile, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+	defer newZipFile.Close()
+
+	zipWriter := zip.NewWriter(newZipFile)
+	defer zipWriter.Close()
+
+	for _, file := range files {
+		if err := addFileToZip(zipWriter, file); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// addFileToZip adds a file to the zip archive
+func addFileToZip(zipWriter *zip.Writer, filename string) error {
+	fileToZip, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
+	defer fileToZip.Close()
+
+	// Get the file information
+	info, err := fileToZip.Stat()
+	if err != nil {
+		return err
+	}
+
+	// Create a header for the file
+	header, err := zip.FileInfoHeader(info)
+	if err != nil {
+		return err
+	}
+
+	// Set the name of the file inside the zip file
+	header.Name = filename
+
+	// Add metadata to the file header if needed
+	header.Method = zip.Deflate
+
+	// Create a writer for the file in the zip archive
+	writer, err := zipWriter.CreateHeader(header)
+	if err != nil {
+		return err
+	}
+
+	// Write the file data to the zip archive
+	_, err = io.Copy(writer, fileToZip)
+	return err
 }
 
 //-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=
@@ -31,9 +92,11 @@ func main() {
 	//File -> Menu Options
 	//Export Project Submenu Item
 	menuItemExportProject := fyne.NewMenuItem("Export Project", func() {
-		dialog.ShowInformation("Information", "WIP: Clicking this will display a confirmation to user.\n"+
-			"Then it will trigger the backend to compile using the backend to be game ready.",
-			myWindow)
+		utils.WeiDuFileConversion(myWindow)
+
+		//dialog.ShowInformation("Information", "WIP: Clicking this will display a confirmation to user.\n"+
+		//	"Then it will trigger the backend to compile using the backend to be game ready.",
+		//	myWindow)
 	})
 	//New Project Submenu Item
 	menuItemNewProject := fyne.NewMenuItem("New Project", func() {
