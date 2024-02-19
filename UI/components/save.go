@@ -41,7 +41,6 @@ func showSaveAsPopup(creatureID, modType, extension string, currentDirPath strin
 			}
 			// Fallback to default naming if no input is provided
 			newFileName = creatureID + "_" + modType + extension
-
 		}
 		newFilePath := filepath.Join(currentDirPath, newFileName)
 
@@ -54,9 +53,14 @@ func showSaveAsPopup(creatureID, modType, extension string, currentDirPath strin
 		}
 	})
 
+	cancelBtn := widget.NewButton("Cancel", func() {
+		popup.Hide()
+	})
+
 	saveBtnBox := container.NewHBox(
 		layout.NewSpacer(),
 		saveBtn,
+		cancelBtn,
 		layout.NewSpacer(),
 	)
 
