@@ -1,0 +1,11 @@
+//Dialogue File
+
+CHAIN IF
+~See("$creatureID")
+IsValidForPartyDialogue("$creatureID")
+RandomNum(2,2)
+Global("$variable","$type",$value)~ THEN $creatureID $dialogueID) //input from user
+@149
+DO ~SetGlobal("$var","$typ",$val)~  //input from user
+== $creatureID @150
+EXIT
