@@ -3,6 +3,7 @@ package main
 import (
 	"UI/utils"
 	"UI/views"
+	"errors"
 	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -184,6 +185,7 @@ menuItemReport := fyne.NewMenuItem("Report Bug", func() {
 			}
 
 		}, myWindow)
+		menuItemExportProject.Disabled = false
 	})
 
 	//-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=
