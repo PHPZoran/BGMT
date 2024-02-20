@@ -14,7 +14,7 @@ import (
 
 func MakeDialogueView(directoryPath string, window fyne.Window) fyne.CanvasObject {
 	//Setting default variables
-	newDirectoryPath := filepath.Join(directoryPath, "Dialogue")
+	newDirectoryPath := utils.GetDialogueDirectory()
 	defaultDialogueFilePath := filepath.Join(newDirectoryPath, "dialogue_example.txt")
 	templateDialogueFilePath := filepath.Join(newDirectoryPath, "dialogue_temp.txt")
 	skeletonDialogueFilePath := filepath.Join(newDirectoryPath, "dialogue_skeleton.txt")
@@ -41,19 +41,17 @@ func MakeDialogueView(directoryPath string, window fyne.Window) fyne.CanvasObjec
 	// Create the file tree with double-click handling
 	tree := utils.CreateFileTree(directoryPath, func(selected string) {
 		// Single click actions, can go here.
-		fullPath := filepath.Join(newDirectoryPath, selected)
+		fullPath := filepath.Join(directoryPath, selected)
 		content, err := ioutil.ReadFile(fullPath)
+		// Handle the ReadFile error
 		if err != nil {
-			dialog.ShowError(err, window)
-			return
+			HandleErrorAndNavigate(err, newDirectoryPath, fullPath, selected, window)
+		} else {
+			// Show file content in a dialog
+			fileContentDialog := dialog.NewCustom("File Content", "Close", widget.NewLabel(string(content)), window)
+			fileContentDialog.Show()
 		}
-		// Show file content in a dialog
-		fileContentDialog := dialog.NewCustom("File Content", "Close", widget.NewLabel(string(content)), window)
-		fileContentDialog.Show()
-		btnToNextDialoguePage.Show()
-	}, func(selected string) {
-		// Handle double-click on a file
-	})
+	}, func(selected string) {})
 
 	// Hide Next button until New or Load is clicked.
 	btnToNextDialoguePage.Hide()

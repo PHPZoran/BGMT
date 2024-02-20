@@ -3,46 +3,47 @@ package views
 import (
 	"UI/components"
 	"UI/utils"
+	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	"io/ioutil"
 	"log"
 	"path/filepath"
 )
 
 func MakeSpeakerView(directoryPath string, window fyne.Window) fyne.CanvasObject {
 	//Setting default variables
-	newDirectoryPath := filepath.Join(directoryPath, "Dialogue")
+	newDirectoryPath := utils.GetDialogueDirectory()
+	fmt.Println(newDirectoryPath)
 	skeletonFilePath := filepath.Join(newDirectoryPath, "dialogue_skeleton.txt")
+	fmt.Println(skeletonFilePath)
 	var workingFilePath = filepath.Join(newDirectoryPath, "working.tmp") // Ensure this is mutable
+	fmt.Println(workingFilePath)
 
-	//Set Toolbar --- Remove?
+	//Set Toolbar
 	speakerID := ""
 	modType := "Dialogue"
 	var extension = ".d"
 	toolbar := CreateToolbar(directoryPath, window, speakerID, modType, extension, newDirectoryPath)
 
 	// Create the file tree with double-click handling
-	tree := utils.CreateFileTree(newDirectoryPath, func(selected string) {
+	tree := utils.CreateFileTree(directoryPath, func(selected string) {
 		// Single click actions, can go here.
-		fullPath := filepath.Join(newDirectoryPath, selected)
-		utils.UpdateFileContent(fullPath)
-		// Confirmation dialog
-		dialog.ShowConfirm("Change File Confirmation", "Are you sure? Any changes will be lost?",
-			func(confirm bool) {
-				if confirm {
-					// If user confirms, update workingFilePath and refresh content view
-					workingFilePath = fullPath
-					utils.UpdateFileContent(workingFilePath)
-				}
-				utils.UpdateFileContent(workingFilePath)
-			}, window)
-	}, func(selected string) {
-		// Handle double-click on a file
-	})
+		fullPath := filepath.Join(directoryPath, selected)
+		content, err := ioutil.ReadFile(fullPath)
+		// Handle the ReadFile error
+		if err != nil {
+			HandleErrorAndNavigate(err, newDirectoryPath, fullPath, selected, window)
+		} else {
+			// Show file content in a dialog
+			fileContentDialog := dialog.NewCustom("File Content", "Close", widget.NewLabel(string(content)), window)
+			fileContentDialog.Show()
+		}
+	}, func(selected string) {})
 
 	//Setting the display box
 	contentLabel := widget.NewLabel("Preview")

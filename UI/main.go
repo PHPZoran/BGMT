@@ -126,9 +126,6 @@ func main() {
 			utils.SetParentDirectory(newPath)
 			fmt.Println(utils.GetParentDirectory())
 
-			//templatePath := "dialogue_temp.txt"
-			//components.MakeNewFile(templatePath, state.SelectedDirectoryPath, myWindow)
-
 			homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
 			myWindow.SetContent(homeView) // Update the window content with the new tree
 		})

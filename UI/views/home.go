@@ -17,22 +17,20 @@ func MakeHomeView(directoryPath string, window fyne.Window) fyne.CanvasObject {
 	modType := ""
 	var extension = ""
 	toolbar := CreateToolbar(directoryPath, window, speakerID, modType, extension, "")
-
 	// Create the file tree with double-click handling
 	tree := utils.CreateFileTree(directoryPath, func(selected string) {
 		// Single click actions, can go here.
 		fullPath := filepath.Join(directoryPath, selected)
 		content, err := ioutil.ReadFile(fullPath)
+		// Handle the ReadFile error
 		if err != nil {
-			dialog.ShowError(err, window)
-			return
+			HandleErrorAndNavigate(err, directoryPath, fullPath, selected, window)
+		} else {
+			// Show file content in a dialog
+			fileContentDialog := dialog.NewCustom("File Content", "Close", widget.NewLabel(string(content)), window)
+			fileContentDialog.Show()
 		}
-		// Show file content in a dialog
-		fileContentDialog := dialog.NewCustom("File Content", "Close", widget.NewLabel(string(content)), window)
-		fileContentDialog.Show()
-	}, func(selected string) {
-		// Handle double-click on a file
-	})
+	}, func(selected string) {})
 
 	btnToDialogue := widget.NewButton("Dialogue Mod", func() {
 		NavigateTo(window, directoryPath, MakeDialogueView)

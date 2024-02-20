@@ -1,10 +1,14 @@
 package utils
 
 import (
+	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
+	"io"
+	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
 	"time"
 )
@@ -84,9 +88,69 @@ func CreateFileTree(dirPath string, onSelect func(string), onDoubleClick func(st
 	return tree
 }
 
+func CopyFile(src, dst string) error {
+	sourceFileStat, err := os.Stat(src)
+	if err != nil {
+		return err
+	}
+
+	if !sourceFileStat.Mode().IsRegular() {
+		return fmt.Errorf("%s is not a regular file", src)
+	}
+
+	source, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer source.Close()
+
+	destination, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer destination.Close()
+	_, err = io.Copy(destination, source)
+	return err
+}
+
+// CopyDir copies all the content from src location to new location
+func CopyDir(src string, dst string) error {
+	var err error
+	var fds []os.FileInfo
+	var srcInfo os.FileInfo
+
+	if srcInfo, err = os.Stat(src); err != nil {
+		return err
+	}
+
+	if err = os.MkdirAll(dst, srcInfo.Mode()); err != nil {
+		return err
+	}
+
+	if fds, err = ioutil.ReadDir(src); err != nil {
+		return err
+	}
+	for _, fd := range fds {
+		srcFilePath := path.Join(src, fd.Name())
+		dstFilePath := path.Join(dst, fd.Name())
+
+		if fd.IsDir() {
+			if err = CopyDir(srcFilePath, dstFilePath); err != nil {
+				fmt.Println(err)
+			}
+		} else {
+			if err = CopyFile(srcFilePath, dstFilePath); err != nil {
+				fmt.Println(err)
+			}
+		}
+	}
+	return nil
+}
+
 // PromptForProjectName prompts the user for a project name and location to create a new project directory.
 func PromptForProjectName(window fyne.Window, onCreate func(newPath string)) {
 	// Step 1: Prompt for project name
+	templatesPath := "templates"
 	entry := widget.NewEntry()
 	entry.SetPlaceHolder("Enter Project Name")
 	nameDialog := dialog.NewCustomConfirm("New Project Name", "Create", "Cancel", entry, func(b bool) {
@@ -115,19 +179,7 @@ func PromptForProjectName(window fyne.Window, onCreate func(newPath string)) {
 			}
 
 			// Step 5: Create associated project folder directories: Dialogue, Script, Installation, Translation
-			if err := os.Mkdir(projectPath+"/Dialogue", 0755); err != nil {
-				dialog.ShowError(err, window)
-				return
-			}
-			if err := os.Mkdir(projectPath+"/Script", 0755); err != nil {
-				dialog.ShowError(err, window)
-				return
-			}
-			if err := os.Mkdir(projectPath+"/Installation", 0755); err != nil {
-				dialog.ShowError(err, window)
-				return
-			}
-			if err := os.Mkdir(projectPath+"/Translation", 0755); err != nil {
+			if err := CopyDir(templatesPath, projectPath); err != nil {
 				dialog.ShowError(err, window)
 				return
 			}
