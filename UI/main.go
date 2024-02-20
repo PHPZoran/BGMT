@@ -3,8 +3,6 @@ package main
 import (
 	"UI/utils"
 	"UI/views"
-	"archive/zip"
-	"errors"
 	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -12,7 +10,6 @@ import (
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
-	"io"
 	"os"
 )
 
@@ -22,61 +19,12 @@ type AppState struct {
 
 //-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=
 
-// ZipFiles compresses one or more files into a zip archive.
-// Credit: https://golangcode.com/create-zip-files-in-go/
-func ZipFiles(filename string, files []string) error {
-	newZipFile, err := os.Create(filename)
-	if err != nil {
-		return err
+func IsBGMDirectory(filename string, window fyne.Window) bool {
+
+	if _, err := os.Stat(filename); err != nil {
+		return false
 	}
-	defer newZipFile.Close()
-
-	zipWriter := zip.NewWriter(newZipFile)
-	defer zipWriter.Close()
-
-	for _, file := range files {
-		if err := addFileToZip(zipWriter, file); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-// addFileToZip adds a file to the zip archive
-func addFileToZip(zipWriter *zip.Writer, filename string) error {
-	fileToZip, err := os.Open(filename)
-	if err != nil {
-		return err
-	}
-	defer fileToZip.Close()
-
-	// Get the file information
-	info, err := fileToZip.Stat()
-	if err != nil {
-		return err
-	}
-
-	// Create a header for the file
-	header, err := zip.FileInfoHeader(info)
-	if err != nil {
-		return err
-	}
-
-	// Set the name of the file inside the zip file
-	header.Name = filename
-
-	// Add metadata to the file header if needed
-	header.Method = zip.Deflate
-
-	// Create a writer for the file in the zip archive
-	writer, err := zipWriter.CreateHeader(header)
-	if err != nil {
-		return err
-	}
-
-	// Write the file data to the zip archive
-	_, err = io.Copy(writer, fileToZip)
-	return err
+	return true
 }
 
 //-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=
@@ -105,8 +53,12 @@ func main() {
 			utils.SetParentDirectory(newPath)
 			fmt.Println(utils.GetParentDirectory())
 
-			homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
-			myWindow.SetContent(homeView) // Update the window content with the new tree
+			if !IsBGMDirectory(utils.GetParentDirectory()+"/BGM.ini", myWindow) {
+				homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
+				myWindow.SetContent(homeView) // Update the window content with the new tree
+			} else {
+				dialog.ShowInformation("Error", "The folder is already a BGM project folder.", myWindow)
+			}
 		})
 		menuItemExportProject.Disabled = false
 	})
@@ -120,13 +72,12 @@ func main() {
 			utils.SetParentDirectory(uri.Path())
 			fmt.Println(utils.GetParentDirectory())
 
-			if _, err := os.Stat(state.SelectedDirectoryPath + "/BGM.ini"); err != nil {
-				dialog.ShowError(errors.New("the selected folder is not a BGM Project folder"), myWindow)
-				return
+			if IsBGMDirectory(utils.GetParentDirectory()+"/BGM.ini", myWindow) {
+				homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
+				myWindow.SetContent(homeView)
+			} else {
+				dialog.ShowInformation("Error", "The folder is not a BGM project folder.", myWindow)
 			}
-
-			homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
-			myWindow.SetContent(homeView)
 		}, myWindow)
 		menuItemExportProject.Disabled = false
 	})
@@ -170,13 +121,13 @@ func main() {
 			utils.SetParentDirectory(uri.Path())
 			fmt.Println(utils.GetParentDirectory())
 
-			if _, err := os.Stat(state.SelectedDirectoryPath + "/BGM.ini"); err != nil {
-				dialog.ShowError(errors.New("the selected folder is not a BGM Project folder"), myWindow)
-				return
+			if IsBGMDirectory(utils.GetParentDirectory()+"/BGM.ini", myWindow) {
+				homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
+				myWindow.SetContent(homeView)
+			} else {
+				dialog.ShowInformation("Error", "The folder is not a BGM project folder.", myWindow)
 			}
 
-			homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
-			myWindow.SetContent(homeView)
 		}, myWindow)
 		menuItemExportProject.Disabled = false
 	})
@@ -189,11 +140,12 @@ func main() {
 			utils.SetParentDirectory(newPath)
 			fmt.Println(utils.GetParentDirectory())
 
-			//templatePath := "dialogue_temp.txt"
-			//components.MakeNewFile(templatePath, state.SelectedDirectoryPath, myWindow)
-
-			homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
-			myWindow.SetContent(homeView) // Update the window content with the new tree
+			if !IsBGMDirectory(utils.GetParentDirectory()+"/BGM.ini", myWindow) {
+				homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
+				myWindow.SetContent(homeView) // Update the window content with the new tree
+			} else {
+				dialog.ShowInformation("Error", "The folder is already a BGM project folder.", myWindow)
+			}
 		})
 		menuItemExportProject.Disabled = false
 	})
