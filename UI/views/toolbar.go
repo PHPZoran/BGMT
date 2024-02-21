@@ -1,6 +1,7 @@
 package views
 
 import (
+	"UI/utils"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
@@ -13,9 +14,7 @@ func CreateToolbar(directoryPath string, window fyne.Window) *fyne.Container {
 		NavigateTo(window, directoryPath, MakeHomeView)
 	})
 	exportButton := widget.NewButton("Export", func() {
-		dialog.ShowInformation("Information", "WIP: Clicking this will display a confirmation to user.\n"+
-			"Then it will trigger the backend to compile using the backend to be game ready.",
-			window)
+		utils.WeiDuFileConversion(window)
 	})
 	saveButton := widget.NewButton("Save", func() {
 		dialog.ShowInformation("Saving", "WIP: Clicking this will allow you to Save the working Session File", window)

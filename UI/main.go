@@ -56,11 +56,11 @@ func main() {
 			if !IsBGMDirectory(utils.GetParentDirectory()+"/BGM.ini", myWindow) {
 				homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
 				myWindow.SetContent(homeView) // Update the window content with the new tree
+				menuItemExportProject.Disabled = false
 			} else {
 				dialog.ShowInformation("Error", "The folder is already a BGM project folder.", myWindow)
 			}
 		})
-		menuItemExportProject.Disabled = false
 	})
 	//Open Project Submenu Item
 	menuItemOpenProject := fyne.NewMenuItem("Open Project", func() {
@@ -124,12 +124,12 @@ func main() {
 			if IsBGMDirectory(utils.GetParentDirectory()+"/BGM.ini", myWindow) {
 				homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
 				myWindow.SetContent(homeView)
+				menuItemExportProject.Disabled = false
 			} else {
 				dialog.ShowInformation("Error", "The folder is not a BGM project folder.", myWindow)
 			}
 
 		}, myWindow)
-		menuItemExportProject.Disabled = false
 	})
 
 	//-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=
@@ -143,11 +143,11 @@ func main() {
 			if !IsBGMDirectory(utils.GetParentDirectory()+"/BGM.ini", myWindow) {
 				homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
 				myWindow.SetContent(homeView) // Update the window content with the new tree
+				menuItemExportProject.Disabled = false
 			} else {
 				dialog.ShowInformation("Error", "The folder is already a BGM project folder.", myWindow)
 			}
 		})
-		menuItemExportProject.Disabled = false
 	})
 
 	//-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=
