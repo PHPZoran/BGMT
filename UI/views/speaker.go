@@ -49,13 +49,13 @@ func MakeSpeakerView(directoryPath string, window fyne.Window) fyne.CanvasObject
 	displayFilePath := ""
 	found := utils.CheckFileForString(workingFilePath)
 	if !found {
-		// "@creatureID" was not found in the file, fileContentView has been set
+		// "$creatureID" was not found in the file, fileContentView has been set
 		displayFilePath = workingFilePath
-		println("String '@creatureID' not found, fileContentView set to:", workingFilePath)
+		println("String '$creatureID' not found, fileContentView set to:", workingFilePath)
 	} else {
-		// "@creatureID" was found in the file
-		displayFilePath = workingFilePath
-		println("String '@creatureID' found, fileContentView set to:", skeletonFilePath)
+		// "$creatureID" was found in the file
+		displayFilePath = skeletonFilePath
+		println("String '$creatureID' found, fileContentView set to:", skeletonFilePath)
 	}
 	fileContentView := utils.LoadFileContent(displayFilePath)
 

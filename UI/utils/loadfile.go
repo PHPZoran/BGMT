@@ -60,7 +60,7 @@ func CheckFileForString(workingFilePath string) (found bool) {
 	}
 
 	// Convert the content to a string and check for "@creatureID"
-	if !strings.Contains(string(content), "@creatureID") {
+	if !strings.Contains(string(content), "$creatureID") {
 		// If "@creatureID" is NOT found, set fileContentView to workingFilePath
 		found = false
 	} else {
