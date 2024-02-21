@@ -3,6 +3,7 @@ package views
 import (
 	"UI/components"
 	"UI/utils"
+	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
@@ -10,12 +11,13 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"io/ioutil"
 	"path/filepath"
-	"fmt"
 )
+
 var (
-    author    string
-    language  string
+	author   string
+	language string
 )
+
 func MakeInstallationView(directoryPath string, window fyne.Window) fyne.CanvasObject {
 	//Setting default variables
 	newDirectoryPath := filepath.Join(directoryPath, "Installation")
@@ -32,7 +34,6 @@ func MakeInstallationView(directoryPath string, window fyne.Window) fyne.CanvasO
 	contentLabel.Wrapping = fyne.TextWrapWord
 
 	// Load and display the default file content
-
 
 	//Buttons for Initial Dialogue options
 	btnToNextDialoguePage := widget.NewButton("Next", func() {
@@ -65,7 +66,7 @@ func MakeInstallationView(directoryPath string, window fyne.Window) fyne.CanvasO
 		btnToNextDialoguePage.Show()
 	})
 
-	btnForLoadModFile := components.CreateLoadModButton(window, ".d", func() {
+	btnForLoadModFile := components.CreateLoadModButton(window, ".d", newDirectoryPath, func() {
 		utils.UpdateFileContent(workingFilePath)
 		tree.Refresh() //TODO
 		btnToNextDialoguePage.Show()
@@ -126,24 +127,24 @@ func MakeInstallationView(directoryPath string, window fyne.Window) fyne.CanvasO
 	split.Offset = .15
 
 	return split
-	
+
 }
 func SetInstallationHeader(window fyne.Window) {
-    authorEntry := widget.NewEntry()
-    languageEntry := widget.NewEntry()
+	authorEntry := widget.NewEntry()
+	languageEntry := widget.NewEntry()
 
-    content := widget.NewForm(
-        widget.NewFormItem("Author:", authorEntry),
-        widget.NewFormItem("Language:", languageEntry),
-    )
+	content := widget.NewForm(
+		widget.NewFormItem("Author:", authorEntry),
+		widget.NewFormItem("Language:", languageEntry),
+	)
 
-    dialog.ShowCustomConfirm("New Installation", "Confirm", "Cancel", content, func(confirmed bool) {
-        if confirmed {
-            author := authorEntry.Text
-            language := languageEntry.Text
-        fmt.Println("Author:", author)
-        fmt.Println("Language:", language)
-       
-        }
-    }, window)
+	dialog.ShowCustomConfirm("New Installation", "Confirm", "Cancel", content, func(confirmed bool) {
+		if confirmed {
+			author := authorEntry.Text
+			language := languageEntry.Text
+			fmt.Println("Author:", author)
+			fmt.Println("Language:", language)
+
+		}
+	}, window)
 }
