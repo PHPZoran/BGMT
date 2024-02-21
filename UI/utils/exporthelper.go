@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func check(e error) {
@@ -35,7 +36,7 @@ func WeiDuFileConversion(window fyne.Window) {
 		filename = entry.Text
 		zipPath := GetParentDirectory() + "/" + filename + ".zip"
 		fmt.Println(zipPath)
-		GPT_Bullshit(zipPath)
+		GPTBullshit(zipPath)
 
 		//checkDialog(zipSource(GetInstallationDirectory(), zipPath), window)
 		//checkDialog(zipSource(GetTranslationDirectory(), zipPath), window)
@@ -150,7 +151,7 @@ func ReadDirectory(directory string) []string {
 
 //-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=
 
-func GPT_Bullshit(zipFolder string) {
+func GPTBullshit(zipFolder string) {
 	zipFile, err := os.Create(zipFolder)
 	if err != nil {
 		fmt.Println("Error creating zip file:", err)
@@ -180,6 +181,11 @@ func GPT_Bullshit(zipFolder string) {
 
 			// Check if the file/directory is not a directory
 			if !info.IsDir() {
+				// Skip files with ".txt" extension
+				if strings.HasSuffix(info.Name(), ".txt") {
+					return nil
+				}
+
 				// Create a new file entry in the zip writer
 				fileWriter, err := zipWriter.Create(zipPath)
 				if err != nil {

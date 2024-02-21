@@ -46,10 +46,21 @@ func main() {
 		//	"Then it will trigger the backend to compile using the backend to be game ready.",
 		//	myWindow)
 	})
+
 	//New Project Submenu Item
 	menuItemNewProject := fyne.NewMenuItem("New Project", func() {
 		utils.PromptForProjectName(myWindow, func(newPath string) {
+
 			state.SelectedDirectoryPath = newPath // Update the global variable with the new path
+
+			var tmp string
+			tmpLength := len(utils.GetParentDirectory())
+			if tmpLength == 0 {
+				tmp = ""
+			} else {
+				tmp = utils.GetParentDirectory()
+			}
+
 			utils.SetParentDirectory(newPath)
 			fmt.Println(utils.GetParentDirectory())
 
@@ -58,6 +69,7 @@ func main() {
 				myWindow.SetContent(homeView) // Update the window content with the new tree
 				menuItemExportProject.Disabled = false
 			} else {
+				utils.SetParentDirectory(tmp)
 				dialog.ShowInformation("Error", "The folder is already a BGM project folder.", myWindow)
 			}
 		})
@@ -69,6 +81,15 @@ func main() {
 				return
 			}
 			state.SelectedDirectoryPath = uri.Path() // Store the selected directory path globally
+
+			var tmp string
+			tmpLength := len(utils.GetParentDirectory())
+			if tmpLength == 0 {
+				tmp = ""
+			} else {
+				tmp = utils.GetParentDirectory()
+			}
+
 			utils.SetParentDirectory(uri.Path())
 			fmt.Println(utils.GetParentDirectory())
 
@@ -76,6 +97,7 @@ func main() {
 				homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
 				myWindow.SetContent(homeView)
 			} else {
+				utils.SetParentDirectory(tmp)
 				dialog.ShowInformation("Error", "The folder is not a BGM project folder.", myWindow)
 			}
 		}, myWindow)
@@ -118,6 +140,15 @@ func main() {
 				return
 			}
 			state.SelectedDirectoryPath = uri.Path() // Store the selected directory path globally
+
+			var tmp string
+			tmpLength := len(utils.GetParentDirectory())
+			if tmpLength == 0 {
+				tmp = ""
+			} else {
+				tmp = utils.GetParentDirectory()
+			}
+
 			utils.SetParentDirectory(uri.Path())
 			fmt.Println(utils.GetParentDirectory())
 
@@ -126,6 +157,7 @@ func main() {
 				myWindow.SetContent(homeView)
 				menuItemExportProject.Disabled = false
 			} else {
+				utils.SetParentDirectory(tmp)
 				dialog.ShowInformation("Error", "The folder is not a BGM project folder.", myWindow)
 			}
 
@@ -137,6 +169,15 @@ func main() {
 	newProjectBtn := widget.NewButton("New Project", func() {
 		utils.PromptForProjectName(myWindow, func(newPath string) {
 			state.SelectedDirectoryPath = newPath // Update the global variable with the new path
+
+			var tmp string
+			tmpLength := len(utils.GetParentDirectory())
+			if tmpLength == 0 {
+				tmp = ""
+			} else {
+				tmp = utils.GetParentDirectory()
+			}
+
 			utils.SetParentDirectory(newPath)
 			fmt.Println(utils.GetParentDirectory())
 
@@ -145,6 +186,7 @@ func main() {
 				myWindow.SetContent(homeView) // Update the window content with the new tree
 				menuItemExportProject.Disabled = false
 			} else {
+				utils.SetParentDirectory(tmp)
 				dialog.ShowInformation("Error", "The folder is already a BGM project folder.", myWindow)
 			}
 		})
