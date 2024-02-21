@@ -132,7 +132,7 @@ func main() {
 			fyne.CurrentApp().OpenURL(parsedURL)
 		}
 
-		content := fyne.NewContainerWithLayout(layout.NewVBoxLayout(),
+		content := container.New(layout.NewVBoxLayout(),
 			labelText,
 			hyperlinkLabel,
 		)
