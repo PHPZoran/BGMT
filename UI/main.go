@@ -73,12 +73,34 @@ func main() {
 
 	//Help -> Menu Options
 	//Report Bug Submenu Item
-	menuItemReport := fyne.NewMenuItem("Report Bug", func() {
-		dialog.ShowInformation("Report an Issue",
-			"If you have encountered a bug or issue while running this application,\n"+
-				"please submit an issue ticket here: \n\nhttps://github.com/PHPZoran/BGMT/issues.\n\n"+
-				"However, please check if your issue already exists prior to posting it.", myWindow)
-	})
+menuItemReport := fyne.NewMenuItem("Report Bug", func() {
+    issueURL := "https://github.com/PHPZoran/BGMT/issues"
+
+    labelText := widget.NewLabel("If you have encountered a bug or issue while running this application,\n"+
+				"please submit an issue ticket by clicking the link below.\n"+
+				"However, please check if your issue already exists prior to posting it.")
+    labelText.Alignment = fyne.TextAlignCenter
+
+    hyperlinkLabel := widget.NewHyperlink("Issue Ticket", &url.URL{})
+
+    parsedURL, err := url.Parse(issueURL)
+    if err != nil {
+        // Handle error
+        return
+    }
+    hyperlinkLabel.SetURL(parsedURL)
+
+    hyperlinkLabel.OnTapped = func() {
+        fyne.CurrentApp().OpenURL(parsedURL)
+    }
+
+    content := fyne.NewContainerWithLayout(layout.NewVBoxLayout(),
+        labelText,
+        hyperlinkLabel,
+    )
+
+    dialog.ShowCustom("Report an Issue", "Close", content, myWindow)
+})
 	//Settings Submenu Item
 	menuItemSettings := fyne.NewMenuItem("Settings", func() {
 		dialog.ShowInformation("Settings", "WIP: Clicking this will provide an application settings window", myWindow)
