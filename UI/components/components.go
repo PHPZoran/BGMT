@@ -2,6 +2,7 @@ package components
 
 import (
 	"errors"
+	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
@@ -88,9 +89,11 @@ func ShowFileLoadDialog(window fyne.Window, expectedExtension string, onValidFil
 // CreateLoadModButton creates and returns a button for loading and copying a mod file.
 func CreateLoadModButton(window fyne.Window, expectedExtension string, initialDir string, postProcess func()) *widget.Button {
 	btn := widget.NewButton("Load Mod File", func() {
-		ShowFileLoadDialog(window, expectedExtension, func(filePath string) {
+		ShowFileLoadDialog(window, expectedExtension, func(srcFilePath string) {
 			// File is valid, now copy to working.tmp
-			err := CopyFile(filePath, "working.tmp")
+			destPath := filepath.Join(initialDir, "working.tmp")
+			fmt.Println("Copying from:", srcFilePath, "to:", destPath)
+			err := CopyFile(srcFilePath, destPath)
 			if err != nil {
 				dialog.ShowError(err, window)
 			} else {
@@ -111,7 +114,6 @@ func CopyFile(src, dst string) error {
 	if err != nil {
 		return err
 	}
-
 	return ioutil.WriteFile(dst, input, 0644)
 }
 

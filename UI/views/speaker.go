@@ -3,7 +3,6 @@ package views
 import (
 	"UI/components"
 	"UI/utils"
-	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
@@ -18,11 +17,8 @@ import (
 func MakeSpeakerView(directoryPath string, window fyne.Window) fyne.CanvasObject {
 	//Setting default variables
 	newDirectoryPath := utils.GetDialogueDirectory()
-	fmt.Println(newDirectoryPath)
 	skeletonFilePath := filepath.Join(newDirectoryPath, "dialogue_skeleton.txt")
-	fmt.Println(skeletonFilePath)
 	var workingFilePath = filepath.Join(newDirectoryPath, "working.tmp") // Ensure this is mutable
-	fmt.Println(workingFilePath)
 
 	//Set Toolbar
 	speakerID := ""
@@ -50,7 +46,18 @@ func MakeSpeakerView(directoryPath string, window fyne.Window) fyne.CanvasObject
 	contentLabel.Wrapping = fyne.TextWrapWord
 
 	// Load and display the default file content
-	fileContentView := utils.LoadFileContent(skeletonFilePath)
+	displayFilePath := ""
+	found := utils.CheckFileForString(workingFilePath)
+	if !found {
+		// "@creatureID" was not found in the file, fileContentView has been set
+		displayFilePath = workingFilePath
+		println("String '@creatureID' not found, fileContentView set to:", workingFilePath)
+	} else {
+		// "@creatureID" was found in the file
+		displayFilePath = workingFilePath
+		println("String '@creatureID' found, fileContentView set to:", skeletonFilePath)
+	}
+	fileContentView := utils.LoadFileContent(displayFilePath)
 
 	var CreatureID string
 	inputSpeakerIDBox := components.CreateLabeledTextInput("CreatureID example: KINGKONG", func(inputValue string) {
