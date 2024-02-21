@@ -64,7 +64,7 @@ func MakeDialogueView(directoryPath string, window fyne.Window) fyne.CanvasObjec
 
 	})
 
-	btnForLoadModFile := components.CreateLoadModButton(window, ".d", func() {
+	btnForLoadModFile := components.CreateLoadModButton(window, ".d", newDirectoryPath, func() {
 		utils.UpdateFileContent(workingFilePath)
 		tree.Refresh()
 		btnToNextDialoguePage.Show()

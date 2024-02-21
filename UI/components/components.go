@@ -5,6 +5,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/widget"
 	"io/ioutil"
 	"log"
@@ -54,14 +55,21 @@ func CreateLabeledTextInputInt(window fyne.Window, placeholder string, onChange 
 	)
 }
 
-func ShowFileLoadDialog(window fyne.Window, expectedExtension string, onValidFileSelected func(filePath string)) {
-	dialog.ShowFileOpen(func(file fyne.URIReadCloser, err error) {
+func ShowFileLoadDialog(window fyne.Window, expectedExtension string, onValidFileSelected func(filePath string), initialDir string) {
+	// Convert initial directory path to ListableURI
+	initialDirURI, err := storage.ListerForURI(storage.NewFileURI(initialDir))
+	if err != nil {
+		dialog.ShowError(err, window)
+		return
+	}
+
+	// Create a file open dialog with the custom callback
+	fileDialog := dialog.NewFileOpen(func(file fyne.URIReadCloser, err error) {
 		if err != nil {
 			dialog.ShowError(err, window)
 			return
 		}
 		if file == nil {
-			// User cancelled the dialog
 			return
 		}
 		// Check if the file has the appropriate extension
@@ -72,10 +80,13 @@ func ShowFileLoadDialog(window fyne.Window, expectedExtension string, onValidFil
 			dialog.ShowInformation("Invalid File", "Please select a file with a "+expectedExtension+" extension", window)
 		}
 	}, window)
+	// Set the initial location for the dialog
+	fileDialog.SetLocation(initialDirURI)
+	fileDialog.Show()
 }
 
 // CreateLoadModButton creates and returns a button for loading and copying a mod file.
-func CreateLoadModButton(window fyne.Window, expectedExtension string, postProcess func()) *widget.Button {
+func CreateLoadModButton(window fyne.Window, expectedExtension string, initialDir string, postProcess func()) *widget.Button {
 	btn := widget.NewButton("Load Mod File", func() {
 		ShowFileLoadDialog(window, expectedExtension, func(filePath string) {
 			// File is valid, now copy to working.tmp
@@ -88,7 +99,7 @@ func CreateLoadModButton(window fyne.Window, expectedExtension string, postProce
 					postProcess() // Execute any post-processing function if provided
 				}
 			}
-		})
+		}, initialDir)
 	})
 
 	return btn
