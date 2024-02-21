@@ -41,7 +41,7 @@ func MakeHomeView(directoryPath string, window fyne.Window) fyne.CanvasObject {
 		//utils.NavigateToScripts(window)
 	})
 	btnToModInstallation := widget.NewButton("Installation Mod", func() {
-		//utils.NavigateToScripts(window)
+		NavigateTo(window, directoryPath, MakeInstallationView)
 	})
 
 	vbox := container.NewVBox(
