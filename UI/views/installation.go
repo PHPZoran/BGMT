@@ -13,15 +13,13 @@ import (
 	"path/filepath"
 )
 
-var (
-	author   string
-	language string
-)
-
 func MakeInstallationView(directoryPath string, window fyne.Window) fyne.CanvasObject {
 	//Setting default variables
 	newDirectoryPath := filepath.Join(directoryPath, "Installation")
 	workingFilePath := filepath.Join(newDirectoryPath, "working.tmp")
+	//defaultInstallationFilePath := filepath.Join(newDirectoryPath, "dialogue_example.txt")
+	//templateInstallationFilePath := filepath.Join(newDirectoryPath, "dialogue_temp.txt")
+	//skeletonInstallationFilePath := filepath.Join(newDirectoryPath, "dialogue_skeleton.txt")
 
 	//Set Toolbar
 	speakerID := ""
@@ -36,46 +34,47 @@ func MakeInstallationView(directoryPath string, window fyne.Window) fyne.CanvasO
 	// Load and display the default file content
 
 	//Buttons for Initial Dialogue options
-	btnToNextDialoguePage := widget.NewButton("Next", func() {
-		//NavigateTo(window, directoryPath, SetInstallationHeader)
+	btnToNextInstallationPage := widget.NewButton("Next", func() {
+		SetInstallationHeader(window)
+		//NavigateTo(window, directoryPath, installation)
 	})
 
 	// Create the file tree with double-click handling
-	tree := utils.CreateFileTree(newDirectoryPath, func(selected string) {
+	tree := utils.CreateFileTree(directoryPath, func(selected string) {
 		// Single click actions, can go here.
-		fullPath := filepath.Join(newDirectoryPath, selected)
+		fullPath := filepath.Join(directoryPath, selected)
 		content, err := ioutil.ReadFile(fullPath)
+		// Handle the ReadFile error
 		if err != nil {
-			dialog.ShowError(err, window)
-			return
+			HandleErrorAndNavigate(err, newDirectoryPath, fullPath, selected, window)
+		} else {
+			// Show file content in a dialog
+			fileContentDialog := dialog.NewCustom("File Content", "Close", widget.NewLabel(string(content)), window)
+			fileContentDialog.Show()
 		}
-		// Show file content in a dialog
-		fileContentDialog := dialog.NewCustom("File Content", "Close", widget.NewLabel(string(content)), window)
-		fileContentDialog.Show()
-		btnToNextDialoguePage.Show()
-	}, func(selected string) {
-		// Handle double-click on a file
-	})
+	}, func(selected string) {})
 
 	// Hide Next button until New or Load is clicked.
-	btnToNextDialoguePage.Hide()
+	btnToNextInstallationPage.Hide()
 
-	btnForNewDialogue := widget.NewButton("New", func() {
+	btnForNewInstallation := widget.NewButton("New", func() {
 		SetInstallationHeader(window)
-		tree.Refresh() //TODO
-		btnToNextDialoguePage.Show()
-	})
-
-	btnForLoadModFile := components.CreateLoadModButton(window, ".d", newDirectoryPath, func() {
+		//components.MakeNewFile(templateInstallationFilePath, newDirectoryPath, window)
 		utils.UpdateFileContent(workingFilePath)
 		tree.Refresh() //TODO
-		btnToNextDialoguePage.Show()
+		btnToNextInstallationPage.Show()
+	})
+
+	btnForLoadModFile := components.CreateLoadModButton(window, ".tp2", newDirectoryPath, func() {
+		utils.UpdateFileContent(workingFilePath)
+		tree.Refresh() //TODO
+		btnToNextInstallationPage.Show()
 	})
 
 	paddedButtonBar2 := container.NewHBox(
 		layout.NewSpacer(),
 		layout.NewSpacer(),
-		btnToNextDialoguePage,
+		btnToNextInstallationPage,
 		layout.NewSpacer(),
 		layout.NewSpacer(),
 	)
@@ -91,7 +90,7 @@ func MakeInstallationView(directoryPath string, window fyne.Window) fyne.CanvasO
 	// VBox containing your buttons and file preview
 	btnOptions := container.NewVBox(
 		layout.NewSpacer(),
-		btnForNewDialogue,
+		btnForNewInstallation,
 		btnForLoadModFile,
 		layout.NewSpacer(),
 		layout.NewSpacer(),
@@ -144,7 +143,6 @@ func SetInstallationHeader(window fyne.Window) {
 			language := languageEntry.Text
 			fmt.Println("Author:", author)
 			fmt.Println("Language:", language)
-
 		}
 	}, window)
 }
