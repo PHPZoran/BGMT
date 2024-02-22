@@ -8,6 +8,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"io/ioutil"
 	"log"
+	"strings"
 )
 
 var contentLabel *widget.Label
@@ -48,4 +49,23 @@ func NewPaddedLabel(label *widget.Label) *fyne.Container {
 
 	// Return a container with the specified padding around the label
 	return container.NewPadded(scrollContainer)
+}
+
+func CheckFileForString(workingFilePath string) (found bool) {
+	// Read the content of the file
+	content, err := ioutil.ReadFile(workingFilePath)
+	if err != nil {
+		// Handle the error according to your application's requirements
+		panic(err) // Example error handling
+	}
+
+	// Convert the content to a string and check for "@creatureID"
+	if !strings.Contains(string(content), "$creatureID") {
+		// If "@creatureID" is NOT found, set fileContentView to workingFilePath
+		found = false
+	} else {
+		// If "@creatureID" is found
+		found = true
+	}
+	return found
 }

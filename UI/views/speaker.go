@@ -9,47 +9,55 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	"io/ioutil"
 	"log"
 	"path/filepath"
 )
 
 func MakeSpeakerView(directoryPath string, window fyne.Window) fyne.CanvasObject {
 	//Setting default variables
-	newDirectoryPath := filepath.Join(directoryPath, "Dialogue")
+	newDirectoryPath := utils.GetDialogueDirectory()
 	skeletonFilePath := filepath.Join(newDirectoryPath, "dialogue_skeleton.txt")
 	var workingFilePath = filepath.Join(newDirectoryPath, "working.tmp") // Ensure this is mutable
 
-	//Set Toolbar --- Remove?
+	//Set Toolbar
 	speakerID := ""
 	modType := "Dialogue"
 	var extension = ".d"
 	toolbar := CreateToolbar(directoryPath, window, speakerID, modType, extension, newDirectoryPath)
 
 	// Create the file tree with double-click handling
-	tree := utils.CreateFileTree(newDirectoryPath, func(selected string) {
+	tree := utils.CreateFileTree(directoryPath, func(selected string) {
 		// Single click actions, can go here.
-		fullPath := filepath.Join(newDirectoryPath, selected)
-		utils.UpdateFileContent(fullPath)
-		// Confirmation dialog
-		dialog.ShowConfirm("Change File Confirmation", "Are you sure? Any changes will be lost?",
-			func(confirm bool) {
-				if confirm {
-					// If user confirms, update workingFilePath and refresh content view
-					workingFilePath = fullPath
-					utils.UpdateFileContent(workingFilePath)
-				}
-				utils.UpdateFileContent(workingFilePath)
-			}, window)
-	}, func(selected string) {
-		// Handle double-click on a file
-	})
+		fullPath := filepath.Join(directoryPath, selected)
+		content, err := ioutil.ReadFile(fullPath)
+		// Handle the ReadFile error
+		if err != nil {
+			HandleErrorAndNavigate(err, newDirectoryPath, fullPath, selected, window)
+		} else {
+			// Show file content in a dialog
+			fileContentDialog := dialog.NewCustom("File Content", "Close", widget.NewLabel(string(content)), window)
+			fileContentDialog.Show()
+		}
+	}, func(selected string) {})
 
 	//Setting the display box
 	contentLabel := widget.NewLabel("Preview")
 	contentLabel.Wrapping = fyne.TextWrapWord
 
 	// Load and display the default file content
-	fileContentView := utils.LoadFileContent(skeletonFilePath)
+	displayFilePath := ""
+	found := utils.CheckFileForString(workingFilePath)
+	if !found {
+		// "$creatureID" was not found in the file, fileContentView has been set
+		displayFilePath = workingFilePath
+		println("String '$creatureID' not found, fileContentView set to:", workingFilePath)
+	} else {
+		// "$creatureID" was found in the file
+		displayFilePath = skeletonFilePath
+		println("String '$creatureID' found, fileContentView set to:", skeletonFilePath)
+	}
+	fileContentView := utils.LoadFileContent(displayFilePath)
 
 	var CreatureID string
 	inputSpeakerIDBox := components.CreateLabeledTextInput("CreatureID example: KINGKONG", func(inputValue string) {
