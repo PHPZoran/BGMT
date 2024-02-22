@@ -3,7 +3,6 @@ package main
 import (
 	"UI/utils"
 	"UI/views"
-	"errors"
 	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -20,6 +19,16 @@ type AppState struct {
 
 //-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=
 
+func IsBGMDirectory(filename string, window fyne.Window) bool {
+
+	if _, err := os.Stat(filename); err != nil {
+		return false
+	}
+	return true
+}
+
+//-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=
+
 func main() {
 	myApp := app.New()
 	myWindow := myApp.NewWindow("Baldur's Gate Mod Tool")
@@ -31,21 +40,39 @@ func main() {
 	//File -> Menu Options
 	//Export Project Submenu Item
 	menuItemExportProject := fyne.NewMenuItem("Export Project", func() {
-		dialog.ShowInformation("Information", "WIP: Clicking this will display a confirmation to user.\n"+
-			"Then it will trigger the backend to compile using the backend to be game ready.",
-			myWindow)
+		utils.WeiDuFileConversion(myWindow)
+
+		//dialog.ShowInformation("Information", "WIP: Clicking this will display a confirmation to user.\n"+
+		//	"Then it will trigger the backend to compile using the backend to be game ready.",
+		//	myWindow)
 	})
+
 	//New Project Submenu Item
 	menuItemNewProject := fyne.NewMenuItem("New Project", func() {
 		utils.PromptForProjectName(myWindow, func(newPath string) {
+
 			state.SelectedDirectoryPath = newPath // Update the global variable with the new path
+
+			var tmp string
+			tmpLength := len(utils.GetParentDirectory())
+			if tmpLength == 0 {
+				tmp = ""
+			} else {
+				tmp = utils.GetParentDirectory()
+			}
+
 			utils.SetParentDirectory(newPath)
 			fmt.Println(utils.GetParentDirectory())
 
-			homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
-			myWindow.SetContent(homeView) // Update the window content with the new tree
+			if !IsBGMDirectory(utils.GetParentDirectory()+"/BGM.ini", myWindow) {
+				homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
+				myWindow.SetContent(homeView) // Update the window content with the new tree
+				menuItemExportProject.Disabled = false
+			} else {
+				utils.SetParentDirectory(tmp)
+				dialog.ShowInformation("Error", "The folder is already a BGM project folder.", myWindow)
+			}
 		})
-		menuItemExportProject.Disabled = false
 	})
 	//Open Project Submenu Item
 	menuItemOpenProject := fyne.NewMenuItem("Open Project", func() {
@@ -54,16 +81,25 @@ func main() {
 				return
 			}
 			state.SelectedDirectoryPath = uri.Path() // Store the selected directory path globally
+
+			var tmp string
+			tmpLength := len(utils.GetParentDirectory())
+			if tmpLength == 0 {
+				tmp = ""
+			} else {
+				tmp = utils.GetParentDirectory()
+			}
+
 			utils.SetParentDirectory(uri.Path())
 			fmt.Println(utils.GetParentDirectory())
 
-			if _, err := os.Stat(state.SelectedDirectoryPath + "/BGM.ini"); err != nil {
-				dialog.ShowError(errors.New("the selected folder is not a BGM Project folder"), myWindow)
-				return
+			if IsBGMDirectory(utils.GetParentDirectory()+"/BGM.ini", myWindow) {
+				homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
+				myWindow.SetContent(homeView)
+			} else {
+				utils.SetParentDirectory(tmp)
+				dialog.ShowInformation("Error", "The folder is not a BGM project folder.", myWindow)
 			}
-
-			homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
-			myWindow.SetContent(homeView)
 		}, myWindow)
 		menuItemExportProject.Disabled = false
 	})
@@ -126,18 +162,28 @@ menuItemReport := fyne.NewMenuItem("Report Bug", func() {
 				return
 			}
 			state.SelectedDirectoryPath = uri.Path() // Store the selected directory path globally
+
+			var tmp string
+			tmpLength := len(utils.GetParentDirectory())
+			if tmpLength == 0 {
+				tmp = ""
+			} else {
+				tmp = utils.GetParentDirectory()
+			}
+
 			utils.SetParentDirectory(uri.Path())
 			fmt.Println(utils.GetParentDirectory())
 
-			if _, err := os.Stat(state.SelectedDirectoryPath + "/BGM.ini"); err != nil {
-				dialog.ShowError(errors.New("the selected folder is not a BGM Project folder"), myWindow)
-				return
+			if IsBGMDirectory(utils.GetParentDirectory()+"/BGM.ini", myWindow) {
+				homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
+				myWindow.SetContent(homeView)
+				menuItemExportProject.Disabled = false
+			} else {
+				utils.SetParentDirectory(tmp)
+				dialog.ShowInformation("Error", "The folder is not a BGM project folder.", myWindow)
 			}
 
-			homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
-			myWindow.SetContent(homeView)
 		}, myWindow)
-		menuItemExportProject.Disabled = false
 	})
 
 	//-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=
@@ -145,16 +191,27 @@ menuItemReport := fyne.NewMenuItem("Report Bug", func() {
 	newProjectBtn := widget.NewButton("New Project", func() {
 		utils.PromptForProjectName(myWindow, func(newPath string) {
 			state.SelectedDirectoryPath = newPath // Update the global variable with the new path
+
+			var tmp string
+			tmpLength := len(utils.GetParentDirectory())
+			if tmpLength == 0 {
+				tmp = ""
+			} else {
+				tmp = utils.GetParentDirectory()
+			}
+
 			utils.SetParentDirectory(newPath)
 			fmt.Println(utils.GetParentDirectory())
 
-			//templatePath := "dialogue_temp.txt"
-			//components.MakeNewFile(templatePath, state.SelectedDirectoryPath, myWindow)
-
-			homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
-			myWindow.SetContent(homeView) // Update the window content with the new tree
+			if !IsBGMDirectory(utils.GetParentDirectory()+"/BGM.ini", myWindow) {
+				homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
+				myWindow.SetContent(homeView) // Update the window content with the new tree
+				menuItemExportProject.Disabled = false
+			} else {
+				utils.SetParentDirectory(tmp)
+				dialog.ShowInformation("Error", "The folder is already a BGM project folder.", myWindow)
+			}
 		})
-		menuItemExportProject.Disabled = false
 	})
 
 	//-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=

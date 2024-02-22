@@ -1,31 +1,14 @@
 package utils
 
-var parentDirectory = ""
-var dialogueDirectory = parentDirectory + "/Dialogue"
-var scriptDirectory = parentDirectory + "/Script"
-var installationDirectory = parentDirectory + "Installation"
-var translationDirectory = parentDirectory + "/Translation"
+var parentDirectory string
 
-func SetParentDirectory(directory string) {
-	parentDirectory = directory
-}
+func SetParentDirectory(directory string) { parentDirectory = directory }
 
-func GetParentDirectory() string {
-	return parentDirectory
-}
+func GetParentDirectory() string { return parentDirectory }
 
-func GetDialogueDirectory() string {
-	return dialogueDirectory
-}
+func GetDialogueDirectory() string     { return parentDirectory + "/Dialogue" }
+func GetScriptDirectory() string       { return parentDirectory + "/Script" }
+func GetInstallationDirectory() string { return parentDirectory + "/Installation" }
+func GetTranslationDirectory() string  { return parentDirectory + "/Translation" }
 
-func GetScriptDirectory() string {
-	return scriptDirectory
-}
-
-func GetInstallationDirectory() string {
-	return installationDirectory
-}
-
-func GetTranslationDirectory() string {
-	return translationDirectory
-}
+//func GetTemporaryDirectory() string { return parentDirectory + "/Templates" }
