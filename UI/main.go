@@ -21,7 +21,7 @@ type AppState struct {
 
 //-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=
 
-func IsBGMDirectory(filename string, window fyne.Window) bool {
+func IsBGMDirectory(filename string) bool {
 
 	if _, err := os.Stat(filename); err != nil {
 		return false
@@ -66,7 +66,7 @@ func main() {
 			utils.SetParentDirectory(newPath)
 			fmt.Println(utils.GetParentDirectory())
 
-			if !IsBGMDirectory(utils.GetParentDirectory()+"/BGM.ini", myWindow) {
+			if !IsBGMDirectory(utils.GetParentDirectory() + "/BGM.ini") {
 				homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
 				myWindow.SetContent(homeView) // Update the window content with the new tree
 				menuItemExportProject.Disabled = false
@@ -95,7 +95,7 @@ func main() {
 			utils.SetParentDirectory(uri.Path())
 			fmt.Println(utils.GetParentDirectory())
 
-			if IsBGMDirectory(utils.GetParentDirectory()+"/BGM.ini", myWindow) {
+			if IsBGMDirectory(utils.GetParentDirectory() + "/BGM.ini") {
 				homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
 				myWindow.SetContent(homeView)
 			} else {
@@ -179,7 +179,7 @@ func main() {
 			utils.SetParentDirectory(uri.Path())
 			fmt.Println(utils.GetParentDirectory())
 
-			if IsBGMDirectory(utils.GetParentDirectory()+"/BGM.ini", myWindow) {
+			if IsBGMDirectory(utils.GetParentDirectory() + "/BGM.ini") {
 				homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
 				myWindow.SetContent(homeView)
 				menuItemExportProject.Disabled = false
@@ -209,7 +209,7 @@ func main() {
 			utils.SetParentDirectory(newPath)
 			fmt.Println(utils.GetParentDirectory())
 
-			if !IsBGMDirectory(utils.GetParentDirectory()+"/BGM.ini", myWindow) {
+			if !IsBGMDirectory(utils.GetParentDirectory() + "/BGM.ini") {
 				homeView := views.MakeHomeView(state.SelectedDirectoryPath, myWindow)
 				myWindow.SetContent(homeView) // Update the window content with the new tree
 				menuItemExportProject.Disabled = false
