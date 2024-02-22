@@ -17,9 +17,8 @@ func MakeInstallationView(directoryPath string, window fyne.Window) fyne.CanvasO
 	//Setting default variables
 	newDirectoryPath := filepath.Join(directoryPath, "Installation")
 	workingFilePath := filepath.Join(newDirectoryPath, "working.tmp")
-	//defaultInstallationFilePath := filepath.Join(newDirectoryPath, "dialogue_example.txt")
-	//templateInstallationFilePath := filepath.Join(newDirectoryPath, "dialogue_temp.txt")
-	//skeletonInstallationFilePath := filepath.Join(newDirectoryPath, "dialogue_skeleton.txt")
+	//defaultInstallationFilePath := filepath.Join(newDirectoryPath, "installation_example.txt")
+	//skeletonInstallationFilePath := filepath.Join(newDirectoryPath, "installation_skeleton.txt")
 
 	//Set Toolbar
 	speakerID := ""
@@ -131,6 +130,8 @@ func MakeInstallationView(directoryPath string, window fyne.Window) fyne.CanvasO
 func SetInstallationHeader(window fyne.Window) {
 	authorEntry := widget.NewEntry()
 	languageEntry := widget.NewEntry()
+	newDirectoryPath := utils.GetInstallationDirectory()
+	templateInstallationFilePath := filepath.Join(newDirectoryPath, "installation_temp.txt")
 
 	content := widget.NewForm(
 		widget.NewFormItem("Author:", authorEntry),
@@ -143,6 +144,8 @@ func SetInstallationHeader(window fyne.Window) {
 			language := languageEntry.Text
 			fmt.Println("Author:", author)
 			fmt.Println("Language:", language)
+			components.MakeNewFile(templateInstallationFilePath, newDirectoryPath, window)
+			//TODO: Insert author and language to new file and Save File
 		}
 	}, window)
 }
