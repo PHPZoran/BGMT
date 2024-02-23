@@ -1,0 +1,9 @@
+IF 
+Global("VARIABLENAME","TYPE",INT)
+THEN 
+RESPONSE #100 
+SetGlobal("VARIABLENAME","TYPE",INT) 
+CreateCreature("X3Bryce",[XCOORDINATE.YCOORDINATE],FACINGDIRECTION) // FACINGDIRECTIONS = S for South, SW for SouthWest, East for East, etc.
+Continue()
+END 
+
