@@ -14,7 +14,7 @@ func NavigateTo(window fyne.Window, directoryPath string, viewFunc func(string, 
 	log.Printf("Directory Path is: " + directoryPath + "\n")
 }
 
-func HandleErrorAndNavigate(err error, directoryPath, fullPath, selected string, window fyne.Window) { //MakeInstallationView, MakeScriptsView
+func HandleErrorAndNavigate(err error, directoryPath, fullPath, selected string, window fyne.Window) {
 	if err != nil {
 		_, dirErr := ioutil.ReadDir(fullPath)
 		if dirErr != nil {

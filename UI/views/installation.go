@@ -3,7 +3,6 @@ package views
 import (
 	"UI/components"
 	"UI/utils"
-	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
@@ -17,8 +16,9 @@ func MakeInstallationView(directoryPath string, window fyne.Window) fyne.CanvasO
 	//Setting default variables
 	newDirectoryPath := filepath.Join(directoryPath, "Installation")
 	workingFilePath := filepath.Join(newDirectoryPath, "working.tmp")
-	//defaultInstallationFilePath := filepath.Join(newDirectoryPath, "installation_example.txt")
-	//skeletonInstallationFilePath := filepath.Join(newDirectoryPath, "installation_skeleton.txt")
+	defaultInstallationFilePath := filepath.Join(newDirectoryPath, "installation_example.txt")
+	templateInstallationFilePath := filepath.Join(newDirectoryPath, "installation_template.txt")
+	skeletonInstallationFilePath := filepath.Join(newDirectoryPath, "installation_skeleton.txt")
 
 	//Set Toolbar
 	speakerID := ""
@@ -31,11 +31,12 @@ func MakeInstallationView(directoryPath string, window fyne.Window) fyne.CanvasO
 	contentLabel.Wrapping = fyne.TextWrapWord
 
 	// Load and display the default file content
+	fileContentView := utils.LoadFileContent(defaultInstallationFilePath)
 
-	//Buttons for Initial Dialogue options
+	//Buttons for Initial Installation options
 	btnToNextInstallationPage := widget.NewButton("Next", func() {
-		SetInstallationHeader(window)
-		//NavigateTo(window, directoryPath, installation)
+		//SetInstallationHeader(window)
+		NavigateTo(window, directoryPath, MakeNextInstallationView)
 	})
 
 	// Create the file tree with double-click handling
@@ -57,16 +58,16 @@ func MakeInstallationView(directoryPath string, window fyne.Window) fyne.CanvasO
 	btnToNextInstallationPage.Hide()
 
 	btnForNewInstallation := widget.NewButton("New", func() {
-		SetInstallationHeader(window)
-		//components.MakeNewFile(templateInstallationFilePath, newDirectoryPath, window)
-		utils.UpdateFileContent(workingFilePath)
-		tree.Refresh() //TODO
+		//SetInstallationHeader(window)
+		components.MakeNewFile(templateInstallationFilePath, newDirectoryPath, window)
+		utils.UpdateFileContent(skeletonInstallationFilePath)
+		tree.Refresh()
 		btnToNextInstallationPage.Show()
 	})
 
 	btnForLoadModFile := components.CreateLoadModButton(window, ".tp2", newDirectoryPath, func() {
 		utils.UpdateFileContent(workingFilePath)
-		tree.Refresh() //TODO
+		tree.Refresh()
 		btnToNextInstallationPage.Show()
 	})
 
@@ -97,6 +98,7 @@ func MakeInstallationView(directoryPath string, window fyne.Window) fyne.CanvasO
 
 	filePreview := container.NewVBox(
 		layout.NewSpacer(),
+		fileContentView,
 		layout.NewSpacer(),
 	)
 
@@ -126,26 +128,4 @@ func MakeInstallationView(directoryPath string, window fyne.Window) fyne.CanvasO
 
 	return split
 
-}
-func SetInstallationHeader(window fyne.Window) {
-	authorEntry := widget.NewEntry()
-	languageEntry := widget.NewEntry()
-	newDirectoryPath := utils.GetInstallationDirectory()
-	templateInstallationFilePath := filepath.Join(newDirectoryPath, "installation_temp.txt")
-
-	content := widget.NewForm(
-		widget.NewFormItem("Author:", authorEntry),
-		widget.NewFormItem("Language:", languageEntry),
-	)
-
-	dialog.ShowCustomConfirm("New Installation", "Confirm", "Cancel", content, func(confirmed bool) {
-		if confirmed {
-			author := authorEntry.Text
-			language := languageEntry.Text
-			fmt.Println("Author:", author)
-			fmt.Println("Language:", language)
-			components.MakeNewFile(templateInstallationFilePath, newDirectoryPath, window)
-			//TODO: Insert author and language to new file and Save File
-		}
-	}, window)
 }

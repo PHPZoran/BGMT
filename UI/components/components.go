@@ -108,6 +108,23 @@ func CreateLoadModButton(window fyne.Window, expectedExtension string, initialDi
 	return btn
 }
 
+func SelectFilesForInstallation(window fyne.Window, expectedExtension string, initialDir string, onFileSelected func(fileName string)) *widget.Button {
+	var inputFileName string
+	btn := widget.NewButton("Select Mod File", func() {
+		ShowFileLoadDialog(window, expectedExtension, func(srcFilePath string) {
+			// File is valid, now copy to working.tmp
+			switch expectedExtension {
+			case ".d", ".baf", ".cre":
+				inputFileName = filepath.Base(srcFilePath)
+				fmt.Println("File chosen is:" + inputFileName)
+			}
+			fmt.Println("File chosen is:" + inputFileName)
+			onFileSelected(inputFileName)
+		}, initialDir)
+	})
+	return btn
+}
+
 // CopyFile copies the contents of the src file to the dst file.
 func CopyFile(src, dst string) error {
 	input, err := ioutil.ReadFile(src)
@@ -164,6 +181,28 @@ func InsertUserInputs(filePath string, inputs *UserInputs) error {
 	if inputs.DialogueID != "" {
 		newContent = strings.ReplaceAll(newContent, "$dialogueID", inputs.DialogueID)
 	}
+	if inputs.Author != "" {
+		newContent = strings.ReplaceAll(newContent, "AUTHORNAMEHERE", inputs.Author)
+	}
+	if inputs.ModName != "" {
+		newContent = strings.ReplaceAll(newContent, "MODNAMEHERE", inputs.ModName)
+	}
+	if inputs.Version != 0 {
+		versionStr := fmt.Sprintf("%v", inputs.Version)
+		newContent = strings.ReplaceAll(newContent, "VERSIONNUMHERE", versionStr)
+	}
+	if inputs.DialogueFile != "" {
+		newContent = strings.ReplaceAll(newContent, "DIALOGUENAMEHERE", inputs.DialogueFile)
+	}
+	if inputs.ScriptsFile != "" {
+		newContent = strings.ReplaceAll(newContent, "SCRIPTNAMEHERE", inputs.ScriptsFile)
+	}
+	if inputs.CreatureFile != "" {
+		newContent = strings.ReplaceAll(newContent, "CREATUREFILENAMEHERE", inputs.CreatureFile)
+	}
+	if inputs.CreatureName != "" {
+		newContent = strings.ReplaceAll(newContent, "CREATUREDISPLAYNAMEHERE", inputs.CreatureName)
+	}
 
 	// Write the updated content back to the file
 	if err := os.WriteFile(filePath, []byte(newContent), 0644); err != nil {
@@ -179,12 +218,19 @@ func InsertUserInputs(filePath string, inputs *UserInputs) error {
 }
 
 type UserInputs struct {
-	Variable   string
-	Type       string
-	Value      string
-	Variable2  string
-	Type2      string
-	Value2     string
-	DialogueID string
-	CreatureID string
+	Variable     string
+	Type         string
+	Value        string
+	Variable2    string
+	Type2        string
+	Value2       string
+	DialogueID   string
+	CreatureID   string
+	Author       string
+	ModName      string
+	DialogueFile string
+	ScriptsFile  string
+	CreatureFile string
+	CreatureName string
+	Version      float64
 }
