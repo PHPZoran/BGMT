@@ -35,7 +35,7 @@ func MakeScriptsView(directoryPath string, window fyne.Window) fyne.CanvasObject
 
 	//Buttons for Initial Dialogue options
 	btnToNextScriptsPage := widget.NewButton("Next", func() {
-		NavigateTo(window, directoryPath, MakeSpeakerView)
+		NavigateTo(window, directoryPath, MakeScriptsModView)
 	})
 
 	// Create the file tree with double-click handling

@@ -63,7 +63,7 @@ func CheckFileForString(workingFilePath string) bool {
 	contentStr := string(content)
 
 	// Check for "$creatureID" or "AUTHORNAMEHERE"
-	if strings.Contains(contentStr, "$creatureID") || strings.Contains(contentStr, "AUTHORNAMEHERE") {
+	if strings.Contains(contentStr, "CREATUREID") || strings.Contains(contentStr, "AUTHORNAMEHERE") {
 		return true
 	}
 	return false

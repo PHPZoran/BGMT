@@ -21,10 +21,10 @@ func MakeDialogueView(directoryPath string, window fyne.Window) fyne.CanvasObjec
 	workingFilePath := filepath.Join(newDirectoryPath, "working.tmp")
 
 	//Set Toolbar
-	speakerID := ""
+	creatureID := ""
 	modType := "Dialogue"
 	extension := ".d"
-	toolbar := CreateToolbar(directoryPath, window, speakerID, modType, extension, newDirectoryPath)
+	toolbar := CreateToolbar(directoryPath, window, creatureID, modType, extension, newDirectoryPath)
 
 	//Setting the display box
 	contentLabel := widget.NewLabel("Preview")

@@ -1,11 +1,9 @@
-//Dialogue File
-
 CHAIN IF
-~See("$creatureID")
-IsValidForPartyDialogue("$creatureID")
+~See("CREATUREID")
+IsValidForPartyDialogue("CREATUREID")
 RandomNum(2,2)
-Global("$variable","$type",$value)~ THEN $creatureID $dialogueID) //input from user
+Global("VARIABLENAME","TYPE",INT)~ THEN CREATUREID $dialogueID)
 @149
-DO ~SetGlobal("$var","$typ",$val)~  //input from user
-== $creatureID @150
+DO ~SetGlobal("VAR","TYP",VAL)~
+== CREATUREID @150
 EXIT

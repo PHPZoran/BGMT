@@ -1,7 +1,6 @@
 package components
 
 import (
-	"errors"
 	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -12,7 +11,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 )
 
@@ -21,34 +19,6 @@ func CreateLabeledTextInput(placeholder string, onChange func(string)) fyne.Canv
 	input := widget.NewEntry()
 	input.SetPlaceHolder(placeholder)
 	input.OnChanged = onChange
-
-	// Combine the label and text input in a vertical box layout
-	return container.NewVBox(
-		input,
-	)
-}
-
-// CreateLabeledTextInputInt creates a labeled text input that accepts integers and passes a string representation of integers within the specified range to the onChange function.
-func CreateLabeledTextInputInt(window fyne.Window, placeholder string, onChange func(s string)) fyne.CanvasObject {
-	input := widget.NewEntry()
-	input.SetPlaceHolder(placeholder)
-
-	input.OnChanged = func(inputValue string) {
-		if inputValue == "" {
-			// If the input is empty, do nothing (or reset to a default state if desired)
-			dialog.ShowError(errors.New("must be a number between -255 and 255"), window)
-		}
-
-		// Try to convert the inputValue to an integer
-		num, err := strconv.Atoi(inputValue)
-		if err != nil || num < -255 || num > 255 {
-			// Input is not a valid number or out of bounds; show an error dialog
-			dialog.ShowError(errors.New("must be a number between -255 and 255"), window)
-		} else {
-			// Input is valid; convert the number back to a string and call the onChange function
-			onChange(strconv.Itoa(num))
-		}
-	}
 
 	// Combine the label and text input in a vertical box layout
 	return container.NewVBox(
@@ -158,25 +128,25 @@ func InsertUserInputs(filePath string, inputs *UserInputs) error {
 
 	// Replace each placeholder with the corresponding value from UserInputs, if not empty
 	if inputs.Variable != "" {
-		newContent = strings.ReplaceAll(newContent, "$variable", inputs.Variable)
+		newContent = strings.ReplaceAll(newContent, "VARIABLENAME", inputs.Variable)
 	}
 	if inputs.Type != "" {
-		newContent = strings.ReplaceAll(newContent, "$type", inputs.Type)
+		newContent = strings.ReplaceAll(newContent, "TYPE", inputs.Type)
 	}
-	if inputs.Value != "" {
-		newContent = strings.ReplaceAll(newContent, "$value", inputs.Value)
-	}
+	valueStr := fmt.Sprintf("%v", inputs.Value)
+	newContent = strings.ReplaceAll(newContent, "INT", valueStr)
+
 	if inputs.Variable2 != "" {
-		newContent = strings.ReplaceAll(newContent, "$var", inputs.Variable2)
+		newContent = strings.ReplaceAll(newContent, "VAR", inputs.Variable2)
 	}
 	if inputs.Type2 != "" {
-		newContent = strings.ReplaceAll(newContent, "$typ", inputs.Type2)
+		newContent = strings.ReplaceAll(newContent, "TYP", inputs.Type2)
 	}
-	if inputs.Value2 != "" {
-		newContent = strings.ReplaceAll(newContent, "$val", inputs.Value2)
-	}
+	valueStr2 := fmt.Sprintf("%v", inputs.Value2)
+	newContent = strings.ReplaceAll(newContent, "VAL", valueStr2)
+
 	if inputs.CreatureID != "" {
-		newContent = strings.ReplaceAll(newContent, "$creatureID", inputs.CreatureID)
+		newContent = strings.ReplaceAll(newContent, "CREATUREID", inputs.CreatureID)
 	}
 	if inputs.DialogueID != "" {
 		newContent = strings.ReplaceAll(newContent, "$dialogueID", inputs.DialogueID)
@@ -203,6 +173,15 @@ func InsertUserInputs(filePath string, inputs *UserInputs) error {
 	if inputs.CreatureName != "" {
 		newContent = strings.ReplaceAll(newContent, "CREATUREDISPLAYNAMEHERE", inputs.CreatureName)
 	}
+	xValueStr := fmt.Sprintf("%v", inputs.XCoordinate)
+	newContent = strings.ReplaceAll(newContent, "XCOORDINATE", xValueStr)
+
+	yValueStr := fmt.Sprintf("%v", inputs.YCoordinate)
+	newContent = strings.ReplaceAll(newContent, "YCOORDINATE", yValueStr)
+
+	if inputs.FacingDirect != "" {
+		newContent = strings.ReplaceAll(newContent, "FACINGDIRECTION", inputs.FacingDirect)
+	}
 
 	// Write the updated content back to the file
 	if err := os.WriteFile(filePath, []byte(newContent), 0644); err != nil {
@@ -220,10 +199,10 @@ func InsertUserInputs(filePath string, inputs *UserInputs) error {
 type UserInputs struct {
 	Variable     string
 	Type         string
-	Value        string
+	Value        int64
 	Variable2    string
 	Type2        string
-	Value2       string
+	Value2       int64
 	DialogueID   string
 	CreatureID   string
 	Author       string
@@ -232,5 +211,8 @@ type UserInputs struct {
 	ScriptsFile  string
 	CreatureFile string
 	CreatureName string
+	FacingDirect string
+	XCoordinate  int64
+	YCoordinate  int64
 	Version      float64
 }
