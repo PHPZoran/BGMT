@@ -1,11 +1,10 @@
-//Dialogue File
+//Scripts Skeleton
 
-CHAIN IF
-~See(" ")
-IsValidForPartyDialogue(" ")
-RandomNum(2,2)
-Global(" "," ", )~ THEN  " ") //input from user
-@149
-DO ~SetGlobal(" "," ", )~  //input from user
-==  @150
-EXIT
+IF
+Global(" "," ", )
+THEN 
+RESPONSE #100 
+SetGlobal(" "," ", )
+CreateCreature(" ",[ . ], )
+Continue()
+END 

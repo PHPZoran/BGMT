@@ -12,18 +12,18 @@ import (
 	"path/filepath"
 )
 
-func MakeDialogueView(directoryPath string, window fyne.Window) fyne.CanvasObject {
+func MakeScriptsView(directoryPath string, window fyne.Window) fyne.CanvasObject {
 	//Setting default variables
-	newDirectoryPath := utils.GetDialogueDirectory()
-	defaultDialogueFilePath := filepath.Join(newDirectoryPath, "dialogue_example.txt")
-	templateDialogueFilePath := filepath.Join(newDirectoryPath, "dialogue_temp.txt")
-	skeletonDialogueFilePath := filepath.Join(newDirectoryPath, "dialogue_skeleton.txt")
+	newDirectoryPath := utils.GetScriptDirectory()
+	defaultScriptsFilePath := filepath.Join(newDirectoryPath, "scripts_example.txt")
+	templateScriptsFilePath := filepath.Join(newDirectoryPath, "scripts_template.txt")
+	skeletonScriptsFilePath := filepath.Join(newDirectoryPath, "scripts_skeleton.txt")
 	workingFilePath := filepath.Join(newDirectoryPath, "working.tmp")
 
 	//Set Toolbar
 	creatureID := ""
-	modType := "Dialogue"
-	extension := ".d"
+	modType := "Scripts"
+	extension := ".baf"
 	toolbar := CreateToolbar(directoryPath, window, creatureID, modType, extension, newDirectoryPath)
 
 	//Setting the display box
@@ -31,11 +31,11 @@ func MakeDialogueView(directoryPath string, window fyne.Window) fyne.CanvasObjec
 	contentLabel.Wrapping = fyne.TextWrapWord
 
 	// Load and display the default file content
-	fileContentView := utils.LoadFileContent(defaultDialogueFilePath)
+	fileContentView := utils.LoadFileContent(defaultScriptsFilePath)
 
 	//Buttons for Initial Dialogue options
-	btnToNextDialoguePage := widget.NewButton("Next", func() {
-		NavigateTo(window, directoryPath, MakeSpeakerView)
+	btnToNextScriptsPage := widget.NewButton("Next", func() {
+		NavigateTo(window, directoryPath, MakeScriptsModView)
 	})
 
 	// Create the file tree with double-click handling
@@ -54,26 +54,26 @@ func MakeDialogueView(directoryPath string, window fyne.Window) fyne.CanvasObjec
 	}, func(selected string) {})
 
 	// Hide Next button until New or Load is clicked.
-	btnToNextDialoguePage.Hide()
+	btnToNextScriptsPage.Hide()
 
-	btnForNewDialogue := widget.NewButton("New", func() {
-		components.MakeNewFile(templateDialogueFilePath, newDirectoryPath, window)
-		utils.UpdateFileContent(skeletonDialogueFilePath)
+	btnForNewScripts := widget.NewButton("New", func() {
+		components.MakeNewFile(templateScriptsFilePath, newDirectoryPath, window)
+		utils.UpdateFileContent(skeletonScriptsFilePath)
 		tree.Refresh()
-		btnToNextDialoguePage.Show()
+		btnToNextScriptsPage.Show()
 
 	})
 
 	btnForLoadModFile := components.CreateLoadModButton(window, ".d", newDirectoryPath, func() {
 		utils.UpdateFileContent(workingFilePath)
 		tree.Refresh()
-		btnToNextDialoguePage.Show()
+		btnToNextScriptsPage.Show()
 	})
 
 	paddedButtonBar2 := container.NewHBox(
 		layout.NewSpacer(),
 		layout.NewSpacer(),
-		btnToNextDialoguePage,
+		btnToNextScriptsPage,
 		layout.NewSpacer(),
 		layout.NewSpacer(),
 	)
@@ -89,7 +89,7 @@ func MakeDialogueView(directoryPath string, window fyne.Window) fyne.CanvasObjec
 	// VBox containing your buttons and file preview
 	btnOptions := container.NewVBox(
 		layout.NewSpacer(),
-		btnForNewDialogue,
+		btnForNewScripts,
 		btnForLoadModFile,
 		layout.NewSpacer(),
 		layout.NewSpacer(),

@@ -51,7 +51,7 @@ func NewPaddedLabel(label *widget.Label) *fyne.Container {
 	return container.NewPadded(scrollContainer)
 }
 
-func CheckFileForString(workingFilePath string) (found bool) {
+func CheckFileForString(workingFilePath string) bool {
 	// Read the content of the file
 	content, err := ioutil.ReadFile(workingFilePath)
 	if err != nil {
@@ -59,13 +59,12 @@ func CheckFileForString(workingFilePath string) (found bool) {
 		panic(err) // Example error handling
 	}
 
-	// Convert the content to a string and check for "@creatureID"
-	if !strings.Contains(string(content), "$creatureID") {
-		// If "@creatureID" is NOT found, set fileContentView to workingFilePath
-		found = false
-	} else {
-		// If "@creatureID" is found
-		found = true
+	// Convert the content to a string
+	contentStr := string(content)
+
+	// Check for "$creatureID" or "AUTHORNAMEHERE"
+	if strings.Contains(contentStr, "CREATUREID") || strings.Contains(contentStr, "AUTHORNAMEHERE") {
+		return true
 	}
-	return found
+	return false
 }

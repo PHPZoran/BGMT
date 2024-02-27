@@ -62,7 +62,7 @@ func main() {
 			} else {
 				tmp = utils.GetParentDirectory()
 			}
-
+			fmt.Println(utils.GetModFolder())
 			utils.SetParentDirectory(newPath)
 			fmt.Println(utils.GetParentDirectory())
 
@@ -92,6 +92,7 @@ func main() {
 				tmp = utils.GetParentDirectory()
 			}
 
+			fmt.Println(utils.GetModFolder())
 			utils.SetParentDirectory(uri.Path())
 			fmt.Println(utils.GetParentDirectory())
 

@@ -18,7 +18,7 @@ func saveToFile(tempFileName, newFileName string) error {
 	return os.Rename(tempFileName, newFileName)
 }
 
-func showSaveAsPopup(creatureID, modType, extension string, currentDirPath string, window fyne.Window) {
+func showSaveAsPopup(creatureID, extension string, currentDirPath string, window fyne.Window) {
 	tempFilePath := filepath.Join(currentDirPath, "working.tmp")
 
 	input := widget.NewEntry()
@@ -33,14 +33,14 @@ func showSaveAsPopup(creatureID, modType, extension string, currentDirPath strin
 			if strings.HasSuffix(userFileName, extension) {
 				newFileName = userFileName
 			} else {
-				newFileName = userFileName + "_" + modType + extension
+				newFileName = userFileName + extension
 			}
 		} else {
 			if creatureID == "" {
-				creatureID = "tempCreatureID"
+				creatureID = "tempFileName"
 			}
 			// Fallback to default naming if no input is provided
-			newFileName = creatureID + "_" + modType + extension
+			newFileName = creatureID + extension
 		}
 		newFilePath := filepath.Join(currentDirPath, newFileName)
 
@@ -74,7 +74,7 @@ func showSaveAsPopup(creatureID, modType, extension string, currentDirPath strin
 	popup.Show()
 }
 
-func SaveFile(creatureID, modType, extension string, currentDirPath string, window fyne.Window) {
+func SaveFile(fileName string, modType, extension string, currentDirPath string, window fyne.Window) {
 	tempFilePath := filepath.Join(currentDirPath, "working.tmp")
 
 	// Check if modType is empty
@@ -85,12 +85,12 @@ func SaveFile(creatureID, modType, extension string, currentDirPath string, wind
 	}
 
 	// Check if creatureID is empty
-	if creatureID == "" {
-		showSaveAsPopup("INSERT CREATUREID", modType, extension, currentDirPath, window)
+	if fileName == "" {
+		showSaveAsPopup("INSERT FileName", extension, currentDirPath, window)
 		return
 	}
 
-	newFileName := creatureID + "_" + modType + extension
+	newFileName := fileName + extension
 	newFilePath := filepath.Join(currentDirPath, newFileName)
 	if _, err := os.Stat(newFileName); os.IsNotExist(err) {
 		// File does not exist, rename the working.tmp file
@@ -112,6 +112,6 @@ func SaveFile(creatureID, modType, extension string, currentDirPath string, wind
 		}
 	} else {
 		// File exists, show popup to get a new file name
-		showSaveAsPopup(creatureID, modType, extension, currentDirPath, window)
+		showSaveAsPopup(fileName, extension, currentDirPath, window)
 	}
 }

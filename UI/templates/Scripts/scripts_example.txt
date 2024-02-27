@@ -1,11 +1,10 @@
-//Dialogue File
+//Scripts Example
 
-CHAIN IF
-~See("KONG123")
-IsValidForPartyDialogue("KONG123")
-RandomNum(2,2)
-Global("KONG123","LOCALS",0)~ THEN @210)
-@149
-DO ~SetGlobal("KONG123","GLOBAL",1)~
-== KINGKONG @150
-EXIT
+IF
+Global("X3BryceCandleKeepSpawn","GLOBAL",0)
+THEN
+RESPONSE #100
+SetGlobal("X3BryceCandleKeepSpawn","GLOBAL",1)
+CreateCreature("X3Bryce",[1273.533],SE)
+Continue()
+END
