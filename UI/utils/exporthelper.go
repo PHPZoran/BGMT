@@ -36,7 +36,7 @@ func WeiDuFileConversion(window fyne.Window) {
 		filename = entry.Text
 		zipPath := GetParentDirectory() + "/" + filename + ".zip"
 		fmt.Println(zipPath)
-		GPTBullshit(zipPath)
+		exportZip(zipPath)
 
 		//checkDialog(zipSource(GetInstallationDirectory(), zipPath), window)
 		//checkDialog(zipSource(GetTranslationDirectory(), zipPath), window)
@@ -151,7 +151,7 @@ func ReadDirectory(directory string) []string {
 
 //-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=
 
-func GPTBullshit(zipFolder string) {
+func exportZip(zipFolder string) {
 	zipFile, err := os.Create(zipFolder)
 	if err != nil {
 		fmt.Println("Error creating zip file:", err)
@@ -159,7 +159,7 @@ func GPTBullshit(zipFolder string) {
 	}
 	defer zipFile.Close()
 
-	directories := []string{GetDialogueDirectory(), GetScriptDirectory(), GetInstallationDirectory(), GetTranslationDirectory()}
+	directories := []string{GetDialogueDirectory(), GetScriptDirectory(), GetInstallationDirectory()}
 
 	// Create a new zip writer
 	zipWriter := zip.NewWriter(zipFile)
