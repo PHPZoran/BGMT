@@ -1,0 +1,20 @@
+BEGIN X3BRYCE
+
+CHAIN IF ~Global("BryceIntro","GLOBAL",0)~ THEN X3BRYCE INTRO 
+@0
+DO ~SetGlobal("BryceIntro","GLOBAL",1)~
+END 
+++ @1 + INTRO.A 
+++ @2 + INTRO.B 
+
+CHAIN X3BRYCE INTRO.A 
+@3 
+EXIT 
+
+CHAIN X3BRYCE INTRO.B 
+@4
+EXIT  
+
+CHAIN IF ~Global("BryceIntro","GLOBAL",1)~ THEN X3BRYCE REPEAT 
+@5
+EXIT 

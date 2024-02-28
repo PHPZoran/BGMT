@@ -1,0 +1,12 @@
+//Example
+//Dialogue File
+
+CHAIN IF
+~See("KONG123")
+IsValidForPartyDialogue("KONG123")
+RandomNum(2,2)
+Global("KONG123","LOCALS",0)~ THEN @210)
+@149
+DO ~SetGlobal("KONG123","GLOBAL",1)~
+== KINGKONG @150
+EXIT

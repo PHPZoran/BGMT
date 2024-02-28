@@ -1,16 +1,26 @@
 package utils
 
 import (
+	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
+	"io"
+	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
+	"time"
 )
 
 // CreateFileTree creates and returns a tree view of the directory structure starting from dirPath.
-func CreateFileTree(dirPath string, onSelect func(string)) *widget.Tree {
+func CreateFileTree(dirPath string, onSelect func(string), onDoubleClick func(string)) *widget.Tree {
 	dirMap := make(map[string][]string) // Map from parent path to slice of child paths
+
+	var lastSelected string
+	var clickTimer *time.Timer
+	doubleClickDuration := time.Duration(time.Millisecond) * 100
+
 	var addChildPaths func(string, string)
 
 	// Recursive function to populate dirMap with the directory structure
@@ -57,17 +67,90 @@ func CreateFileTree(dirPath string, onSelect func(string)) *widget.Tree {
 
 	// Set onSelect behavior
 	tree.OnSelected = func(id widget.TreeNodeID) {
-		if onSelect != nil {
-			onSelect(id)
+		if clickTimer != nil {
+			clickTimer.Stop()
 		}
+		clickTimer = time.AfterFunc(doubleClickDuration, func() {
+			if onSelect != nil && lastSelected == id {
+				onSelect(id) // Single-click action
+			}
+		})
+		if lastSelected == id {
+			// Double-click detected
+			clickTimer.Stop()
+			if onDoubleClick != nil {
+				onDoubleClick(id) // Double-click action
+			}
+		}
+		lastSelected = id
 	}
 
 	return tree
 }
 
+func CopyFile(src, dst string) error {
+	sourceFileStat, err := os.Stat(src)
+	if err != nil {
+		return err
+	}
+
+	if !sourceFileStat.Mode().IsRegular() {
+		return fmt.Errorf("%s is not a regular file", src)
+	}
+
+	source, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer source.Close()
+
+	destination, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer destination.Close()
+	_, err = io.Copy(destination, source)
+	return err
+}
+
+// CopyDir copies all the content from src location to new location
+func CopyDir(src string, dst string) error {
+	var err error
+	var fds []os.FileInfo
+	var srcInfo os.FileInfo
+
+	if srcInfo, err = os.Stat(src); err != nil {
+		return err
+	}
+
+	if err = os.MkdirAll(dst, srcInfo.Mode()); err != nil {
+		return err
+	}
+
+	if fds, err = ioutil.ReadDir(src); err != nil {
+		return err
+	}
+	for _, fd := range fds {
+		srcFilePath := path.Join(src, fd.Name())
+		dstFilePath := path.Join(dst, fd.Name())
+
+		if fd.IsDir() {
+			if err = CopyDir(srcFilePath, dstFilePath); err != nil {
+				fmt.Println(err)
+			}
+		} else {
+			if err = CopyFile(srcFilePath, dstFilePath); err != nil {
+				fmt.Println(err)
+			}
+		}
+	}
+	return nil
+}
+
 // PromptForProjectName prompts the user for a project name and location to create a new project directory.
 func PromptForProjectName(window fyne.Window, onCreate func(newPath string)) {
 	// Step 1: Prompt for project name
+	templatesPath := "templates"
 	entry := widget.NewEntry()
 	entry.SetPlaceHolder("Enter Project Name")
 	nameDialog := dialog.NewCustomConfirm("New Project Name", "Create", "Cancel", entry, func(b bool) {
@@ -89,9 +172,37 @@ func PromptForProjectName(window fyne.Window, onCreate func(newPath string)) {
 				return
 			}
 
+			// Step 4: Create indicative BGM project .ini file
+			if err := os.WriteFile(projectPath+"/BGM.ini", []byte(""), 0755); err != nil {
+				dialog.ShowError(err, window)
+				return
+			}
+
+			// Step 5: Create associated project folder directories: Dialogue, Script, Installation, Translation
+			if err := CopyDir(templatesPath, projectPath); err != nil {
+				dialog.ShowError(err, window)
+				return
+			}
+
 			// Invoke the callback with the new project path
 			onCreate(projectPath)
 		}, window)
 	}, window)
 	nameDialog.Show()
 }
+
+/*
+func PromptForText(window fyne.Window) string {
+
+	entry := widget.NewEntry()
+	entry.SetPlaceHolder("Enter Export Folder Name")
+	nameDialog := dialog.NewCustomConfirm("Export Project Name", "Create", "Cancel", entry, func(b bool) {
+		if !b {
+			return
+		}
+		WeiDuFileConversion(window,entry.Text)
+	}, window)
+	nameDialog.Show()
+
+	return filename
+}*/

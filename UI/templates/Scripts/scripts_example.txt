@@ -1,0 +1,10 @@
+//Scripts Example
+
+IF
+Global("X3BryceCandleKeepSpawn","GLOBAL",0)
+THEN
+RESPONSE #100
+SetGlobal("X3BryceCandleKeepSpawn","GLOBAL",1)
+CreateCreature("X3Bryce",[1273.533],SE)
+Continue()
+END

@@ -1,0 +1,10 @@
+//Scripts Skeleton
+
+IF
+Global(" "," ", )
+THEN 
+RESPONSE #100 
+SetGlobal(" "," ", )
+CreateCreature(" ",[ . ], )
+Continue()
+END 

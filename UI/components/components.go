@@ -1,14 +1,16 @@
 package components
 
 import (
-	"errors"
+	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/widget"
 	"io/ioutil"
+	"log"
+	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 )
 
@@ -24,42 +26,21 @@ func CreateLabeledTextInput(placeholder string, onChange func(string)) fyne.Canv
 	)
 }
 
-// CreateLabeledTextInputInt creates a labeled text input that accepts integers and passes a string representation of integers within the specified range to the onChange function.
-func CreateLabeledTextInputInt(window fyne.Window, placeholder string, onChange func(s string)) fyne.CanvasObject {
-	input := widget.NewEntry()
-	input.SetPlaceHolder(placeholder)
-
-	input.OnChanged = func(inputValue string) {
-		if inputValue == "" {
-			// If the input is empty, do nothing (or reset to a default state if desired)
-			dialog.ShowError(errors.New("must be a number between -255 and 255"), window)
-		}
-
-		// Try to convert the inputValue to an integer
-		num, err := strconv.Atoi(inputValue)
-		if err != nil || num < -255 || num > 255 {
-			// Input is not a valid number or out of bounds; show an error dialog
-			dialog.ShowError(errors.New("must be a number between -255 and 255"), window)
-		} else {
-			// Input is valid; convert the number back to a string and call the onChange function
-			onChange(strconv.Itoa(num))
-		}
+func ShowFileLoadDialog(window fyne.Window, expectedExtension string, onValidFileSelected func(filePath string), initialDir string) {
+	// Convert initial directory path to ListableURI
+	initialDirURI, err := storage.ListerForURI(storage.NewFileURI(initialDir))
+	if err != nil {
+		dialog.ShowError(err, window)
+		return
 	}
 
-	// Combine the label and text input in a vertical box layout
-	return container.NewVBox(
-		input,
-	)
-}
-
-func ShowFileLoadDialog(window fyne.Window, expectedExtension string, onValidFileSelected func(filePath string)) {
-	dialog.ShowFileOpen(func(file fyne.URIReadCloser, err error) {
+	// Create a file open dialog with the custom callback
+	fileDialog := dialog.NewFileOpen(func(file fyne.URIReadCloser, err error) {
 		if err != nil {
 			dialog.ShowError(err, window)
 			return
 		}
 		if file == nil {
-			// User cancelled the dialog
 			return
 		}
 		// Check if the file has the appropriate extension
@@ -70,14 +51,19 @@ func ShowFileLoadDialog(window fyne.Window, expectedExtension string, onValidFil
 			dialog.ShowInformation("Invalid File", "Please select a file with a "+expectedExtension+" extension", window)
 		}
 	}, window)
+	// Set the initial location for the dialog
+	fileDialog.SetLocation(initialDirURI)
+	fileDialog.Show()
 }
 
 // CreateLoadModButton creates and returns a button for loading and copying a mod file.
-func CreateLoadModButton(window fyne.Window, expectedExtension string, postProcess func()) *widget.Button {
+func CreateLoadModButton(window fyne.Window, expectedExtension string, initialDir string, postProcess func()) *widget.Button {
 	btn := widget.NewButton("Load Mod File", func() {
-		ShowFileLoadDialog(window, expectedExtension, func(filePath string) {
+		ShowFileLoadDialog(window, expectedExtension, func(srcFilePath string) {
 			// File is valid, now copy to working.tmp
-			err := CopyFile(filePath, "working.tmp")
+			destPath := filepath.Join(initialDir, "working.tmp")
+			fmt.Println("Copying from:", srcFilePath, "to:", destPath)
+			err := CopyFile(srcFilePath, destPath)
 			if err != nil {
 				dialog.ShowError(err, window)
 			} else {
@@ -86,9 +72,26 @@ func CreateLoadModButton(window fyne.Window, expectedExtension string, postProce
 					postProcess() // Execute any post-processing function if provided
 				}
 			}
-		})
+		}, initialDir)
 	})
 
+	return btn
+}
+
+func SelectFilesForInstallation(window fyne.Window, expectedExtension string, initialDir string, onFileSelected func(fileName string)) *widget.Button {
+	var inputFileName string
+	btn := widget.NewButton("Select Mod File", func() {
+		ShowFileLoadDialog(window, expectedExtension, func(srcFilePath string) {
+			// File is valid, now copy to working.tmp
+			switch expectedExtension {
+			case ".d", ".baf", ".cre":
+				inputFileName = filepath.Base(srcFilePath)
+				fmt.Println("File chosen is:" + inputFileName)
+			}
+			fmt.Println("File chosen is:" + inputFileName)
+			onFileSelected(inputFileName)
+		}, initialDir)
+	})
 	return btn
 }
 
@@ -98,7 +101,6 @@ func CopyFile(src, dst string) error {
 	if err != nil {
 		return err
 	}
-
 	return ioutil.WriteFile(dst, input, 0644)
 }
 
@@ -115,35 +117,102 @@ func MakeNewFile(templatePath, projectDir string, window fyne.Window) {
 // InsertUserInputs replaces placeholders in a file with user inputs.
 func InsertUserInputs(filePath string, inputs *UserInputs) error {
 
-	content, err := ioutil.ReadFile(filePath)
+	content, err := os.ReadFile(filePath)
 	if err != nil {
+		log.Println("ERROR: Something is wrong")
 		return err
 	}
 
 	// Convert the content to a string for replacement
 	newContent := string(content)
 
-	// Replace each placeholder with the corresponding value from UserInputs
-	newContent = strings.ReplaceAll(newContent, "$variable", inputs.Variable)
-	newContent = strings.ReplaceAll(newContent, "$type", inputs.Type)
-	newContent = strings.ReplaceAll(newContent, "$value", inputs.Value)
-	newContent = strings.ReplaceAll(newContent, "$var", inputs.Variable2)
-	newContent = strings.ReplaceAll(newContent, "$typ", inputs.Type2)
-	newContent = strings.ReplaceAll(newContent, "$val", inputs.Value2)
-	newContent = strings.ReplaceAll(newContent, "$creatureID", inputs.CreatureID)
-	newContent = strings.ReplaceAll(newContent, "$dialogueID", inputs.DialogueID)
+	// Replace each placeholder with the corresponding value from UserInputs, if not empty
+	if inputs.Variable != "" {
+		newContent = strings.ReplaceAll(newContent, "VARIABLENAME", inputs.Variable)
+	}
+	if inputs.Type != "" {
+		newContent = strings.ReplaceAll(newContent, "TYPE", inputs.Type)
+	}
+	valueStr := fmt.Sprintf("%v", inputs.Value)
+	newContent = strings.ReplaceAll(newContent, "INT", valueStr)
+
+	if inputs.Variable2 != "" {
+		newContent = strings.ReplaceAll(newContent, "VAR", inputs.Variable2)
+	}
+	if inputs.Type2 != "" {
+		newContent = strings.ReplaceAll(newContent, "TYP", inputs.Type2)
+	}
+	valueStr2 := fmt.Sprintf("%v", inputs.Value2)
+	newContent = strings.ReplaceAll(newContent, "VAL", valueStr2)
+
+	if inputs.CreatureID != "" {
+		newContent = strings.ReplaceAll(newContent, "CREATUREID", inputs.CreatureID)
+	}
+	if inputs.DialogueID != "" {
+		newContent = strings.ReplaceAll(newContent, "$dialogueID", inputs.DialogueID)
+	}
+	if inputs.Author != "" {
+		newContent = strings.ReplaceAll(newContent, "AUTHORNAMEHERE", inputs.Author)
+	}
+	if inputs.ModName != "" {
+		newContent = strings.ReplaceAll(newContent, "MODNAMEHERE", inputs.ModName)
+	}
+	if inputs.Version != 0 {
+		versionStr := fmt.Sprintf("%v", inputs.Version)
+		newContent = strings.ReplaceAll(newContent, "VERSIONNUMHERE", versionStr)
+	}
+	if inputs.DialogueFile != "" {
+		newContent = strings.ReplaceAll(newContent, "DIALOGUENAMEHERE", inputs.DialogueFile)
+	}
+	if inputs.ScriptsFile != "" {
+		newContent = strings.ReplaceAll(newContent, "SCRIPTNAMEHERE", inputs.ScriptsFile)
+	}
+	if inputs.CreatureFile != "" {
+		newContent = strings.ReplaceAll(newContent, "CREATUREFILENAMEHERE", inputs.CreatureFile)
+	}
+	if inputs.CreatureName != "" {
+		newContent = strings.ReplaceAll(newContent, "CREATUREDISPLAYNAMEHERE", inputs.CreatureName)
+	}
+	xValueStr := fmt.Sprintf("%v", inputs.XCoordinate)
+	newContent = strings.ReplaceAll(newContent, "XCOORDINATE", xValueStr)
+
+	yValueStr := fmt.Sprintf("%v", inputs.YCoordinate)
+	newContent = strings.ReplaceAll(newContent, "YCOORDINATE", yValueStr)
+
+	if inputs.FacingDirect != "" {
+		newContent = strings.ReplaceAll(newContent, "FACINGDIRECTION", inputs.FacingDirect)
+	}
 
 	// Write the updated content back to the file
-	return ioutil.WriteFile(filePath, []byte(newContent), 0644)
+	if err := os.WriteFile(filePath, []byte(newContent), 0644); err != nil {
+		log.Printf("Failed to write to file '%s': %v", filePath, err)
+		return err
+	}
+	log.Printf("Successfully wrote to file '%s'", filePath)
+	// After writing to the file
+	readBackContent, _ := os.ReadFile(filePath)
+	log.Printf("Content after write: %s", string(readBackContent))
+
+	return nil
 }
 
 type UserInputs struct {
-	Variable   string
-	Type       string
-	Value      string
-	Variable2  string
-	Type2      string
-	Value2     string
-	DialogueID string
-	CreatureID string
+	Variable     string
+	Type         string
+	Value        int64
+	Variable2    string
+	Type2        string
+	Value2       int64
+	DialogueID   string
+	CreatureID   string
+	Author       string
+	ModName      string
+	DialogueFile string
+	ScriptsFile  string
+	CreatureFile string
+	CreatureName string
+	FacingDirect string
+	XCoordinate  int64
+	YCoordinate  int64
+	Version      float64
 }

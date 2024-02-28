@@ -1,0 +1,9 @@
+CHAIN IF
+~See("CREATUREID")
+IsValidForPartyDialogue("CREATUREID")
+RandomNum(2,2)
+Global("VARIABLENAME","TYPE",INT)~ THEN CREATUREID $dialogueID)
+@149
+DO ~SetGlobal("VAR","TYP",VAL)~
+== CREATUREID @150
+EXIT

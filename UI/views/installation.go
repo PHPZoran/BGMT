@@ -12,30 +12,31 @@ import (
 	"path/filepath"
 )
 
-func MakeDialogueView(directoryPath string, window fyne.Window) fyne.CanvasObject {
+func MakeInstallationView(directoryPath string, window fyne.Window) fyne.CanvasObject {
 	//Setting default variables
-	newDirectoryPath := utils.GetDialogueDirectory()
-	defaultDialogueFilePath := filepath.Join(newDirectoryPath, "dialogue_example.txt")
-	templateDialogueFilePath := filepath.Join(newDirectoryPath, "dialogue_temp.txt")
-	skeletonDialogueFilePath := filepath.Join(newDirectoryPath, "dialogue_skeleton.txt")
+	newDirectoryPath := filepath.Join(directoryPath, "Installation")
 	workingFilePath := filepath.Join(newDirectoryPath, "working.tmp")
+	defaultInstallationFilePath := filepath.Join(newDirectoryPath, "installation_example.txt")
+	templateInstallationFilePath := filepath.Join(newDirectoryPath, "installation_template.txt")
+	skeletonInstallationFilePath := filepath.Join(newDirectoryPath, "installation_skeleton.txt")
 
 	//Set Toolbar
-	creatureID := ""
-	modType := "Dialogue"
-	extension := ".d"
-	toolbar := CreateToolbar(directoryPath, window, creatureID, modType, extension, newDirectoryPath)
+	speakerID := ""
+	modType := "Installation"
+	extension := ".tp2"
+	toolbar := CreateToolbar(directoryPath, window, speakerID, modType, extension, newDirectoryPath)
 
 	//Setting the display box
 	contentLabel := widget.NewLabel("Preview")
 	contentLabel.Wrapping = fyne.TextWrapWord
 
 	// Load and display the default file content
-	fileContentView := utils.LoadFileContent(defaultDialogueFilePath)
+	fileContentView := utils.LoadFileContent(defaultInstallationFilePath)
 
-	//Buttons for Initial Dialogue options
-	btnToNextDialoguePage := widget.NewButton("Next", func() {
-		NavigateTo(window, directoryPath, MakeSpeakerView)
+	//Buttons for Initial Installation options
+	btnToNextInstallationPage := widget.NewButton("Next", func() {
+		//SetInstallationHeader(window)
+		NavigateTo(window, directoryPath, MakeNextInstallationView)
 	})
 
 	// Create the file tree with double-click handling
@@ -54,26 +55,26 @@ func MakeDialogueView(directoryPath string, window fyne.Window) fyne.CanvasObjec
 	}, func(selected string) {})
 
 	// Hide Next button until New or Load is clicked.
-	btnToNextDialoguePage.Hide()
+	btnToNextInstallationPage.Hide()
 
-	btnForNewDialogue := widget.NewButton("New", func() {
-		components.MakeNewFile(templateDialogueFilePath, newDirectoryPath, window)
-		utils.UpdateFileContent(skeletonDialogueFilePath)
+	btnForNewInstallation := widget.NewButton("New", func() {
+		//SetInstallationHeader(window)
+		components.MakeNewFile(templateInstallationFilePath, newDirectoryPath, window)
+		utils.UpdateFileContent(skeletonInstallationFilePath)
 		tree.Refresh()
-		btnToNextDialoguePage.Show()
-
+		btnToNextInstallationPage.Show()
 	})
 
-	btnForLoadModFile := components.CreateLoadModButton(window, ".d", newDirectoryPath, func() {
+	btnForLoadModFile := components.CreateLoadModButton(window, ".tp2", newDirectoryPath, func() {
 		utils.UpdateFileContent(workingFilePath)
 		tree.Refresh()
-		btnToNextDialoguePage.Show()
+		btnToNextInstallationPage.Show()
 	})
 
 	paddedButtonBar2 := container.NewHBox(
 		layout.NewSpacer(),
 		layout.NewSpacer(),
-		btnToNextDialoguePage,
+		btnToNextInstallationPage,
 		layout.NewSpacer(),
 		layout.NewSpacer(),
 	)
@@ -89,7 +90,7 @@ func MakeDialogueView(directoryPath string, window fyne.Window) fyne.CanvasObjec
 	// VBox containing your buttons and file preview
 	btnOptions := container.NewVBox(
 		layout.NewSpacer(),
-		btnForNewDialogue,
+		btnForNewInstallation,
 		btnForLoadModFile,
 		layout.NewSpacer(),
 		layout.NewSpacer(),
@@ -126,4 +127,5 @@ func MakeDialogueView(directoryPath string, window fyne.Window) fyne.CanvasObjec
 	split.Offset = .15
 
 	return split
+
 }
