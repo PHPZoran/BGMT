@@ -80,19 +80,21 @@ func CreateLoadModButton(window fyne.Window, expectedExtension string, initialDi
 }
 
 func SelectFilesForInstallation(modName string, window fyne.Window, expectedExtension string, initialDir string, onFileSelected func(fileName string)) *widget.Button {
-	var inputFileName string
-	btn := widget.NewButton("Select "+modName+" File", func() {
+	// First, create the button without defining its action
+	btn := widget.NewButton("Select "+modName+" File", nil)
+	btn.OnTapped = func() {
 		ShowFileLoadDialog(window, expectedExtension, func(srcFilePath string) {
-			// File is valid, now copy to working.tmp
-			switch expectedExtension {
-			case ".d", ".baf", ".cre":
-				inputFileName = filepath.Base(srcFilePath)
-				fmt.Println("File chosen is:" + inputFileName)
+			inputFileName := filepath.Base(srcFilePath) // Extract just the filename
+			if expectedExtension == ".d" || expectedExtension == ".baf" || expectedExtension == ".cre" {
+				// Valid file selected, update button text and invoke callback
+				btn.SetText(inputFileName)    // Update the button label
+				onFileSelected(inputFileName) // Execute the provided callback function
+			} else {
+				fmt.Println("Invalid file extension.")
 			}
-			fmt.Println("File chosen is:" + inputFileName)
-			onFileSelected(inputFileName)
 		}, initialDir)
-	})
+	}
+
 	return btn
 }
 

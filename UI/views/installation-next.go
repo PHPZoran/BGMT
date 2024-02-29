@@ -90,7 +90,7 @@ func MakeNextInstallationView(directoryPath string, window fyne.Window) fyne.Can
 
 	var CreatureFileInput string
 	var CreatureNameInput string
-	btnSelectCreatureFile := components.SelectFilesForInstallation("Creature", window, ".cre", utils.GetParentDirectory(), func(fileName string) {
+	btnSelectCreatureFile := components.SelectFilesForInstallation("Creature", window, ".cre", utils.GetCreatureDirectory(), func(fileName string) {
 		CreatureFileInput = strings.TrimSuffix(fileName, ".cre")
 		fmt.Println("The selected file is:", fileName)
 		CreatureNameInput = CreatureFileInput

@@ -11,6 +11,7 @@ func GetModFolder() string             { return filepath.Base(parentDirectory) }
 func GetDialogueDirectory() string     { return parentDirectory + "/Dialogue" }
 func GetScriptDirectory() string       { return parentDirectory + "/Scripts" }
 func GetInstallationDirectory() string { return parentDirectory + "/Installation" }
+func GetCreatureDirectory() string     { return parentDirectory + "/CRE" }
 func GetTranslationDirectory() string  { return parentDirectory + "/Translation/English" }
 
 //func GetTemporaryDirectory() string { return parentDirectory + "/Templates" }
