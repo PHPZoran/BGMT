@@ -89,16 +89,20 @@ func MakeNextInstallationView(directoryPath string, window fyne.Window) fyne.Can
 	})
 
 	var CreatureFileInput string
-	var CreatureNameInput string
 	btnSelectCreatureFile := components.SelectFilesForInstallation("Creature", window, ".cre", utils.GetCreatureDirectory(), func(fileName string) {
 		CreatureFileInput = strings.TrimSuffix(fileName, ".cre")
 		fmt.Println("The selected file is:", fileName)
-		CreatureNameInput = CreatureFileInput
+	})
+
+	var CreatureNameInput string
+	inputCreatureBox := components.CreateLabeledTextInput("Creature Display name:", func(inputValue string) {
+		CreatureNameInput = inputValue
 	})
 
 	variableBoxesContainer := container.NewVBox(
 		inputAuthorBox,
 		inputVersionBox,
+		inputCreatureBox,
 		btnSelectDialogueFile,
 		btnSelectScriptsFile,
 		btnSelectCreatureFile,
@@ -110,8 +114,9 @@ func MakeNextInstallationView(directoryPath string, window fyne.Window) fyne.Can
 			dialog.ShowInformation("Error", "Please enter an Author name", window)
 			return
 		}
-		components.SaveFile(AuthorInput, "installation", extension, newDirectoryPath, window)
-		err := components.CopyFile(filepath.Join(newDirectoryPath, AuthorInput+extension), filepath.Join(utils.GetParentDirectory(), AuthorInput+extension))
+		projectName := utils.GetModFolder()
+		components.SaveFile(projectName, "installation", extension, newDirectoryPath, window)
+		err := components.CopyFile(filepath.Join(newDirectoryPath, projectName+extension), filepath.Join(utils.GetParentDirectory(), projectName+extension))
 		if err != nil {
 			dialog.ShowError(err, window)
 		} else {

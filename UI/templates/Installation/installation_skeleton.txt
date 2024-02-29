@@ -8,9 +8,9 @@ LANGUAGE
   ~english~
   ~%MOD_FOLDER%/Translation/English/setup.tra~
   
- BEGIN ~Tutorial Example Mod~
+ BEGIN @0
  
-  EXTEND_TOP ~AR2600.bcs~ ~%MOD_FOLDER%/Script/AR2600.baf~	
+  EXTEND_TOP ~.bcs~ ~%MOD_FOLDER%/Script/.baf~
   COPY ~%MOD_FOLDER%/CRE/.cre~ ~override/.cre~
   SAY NAME1 @1
   SAY NAME2 @1
