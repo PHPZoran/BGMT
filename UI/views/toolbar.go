@@ -2,11 +2,12 @@ package views
 
 import (
 	"UI/components"
-	"fmt"
 	"UI/utils"
+	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 	"log"
 	"os"
@@ -64,18 +65,12 @@ func CreateToolbar(directoryPath string, window fyne.Window, creatureID string, 
 	})
 
 	//-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=
-	//helpButton TODO
-	helpButton := widget.NewButton("Help", func() {
-		dialog.ShowInformation("Help", "WIP: Clicking this will provide you a URL to our github to submit a ticket", window)
-	})
-
-	//-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=
 	// Create the toolbar using a horizontal container
 	toolbar := container.NewHBox(
 		homeButton,
 		exportButton,
 		saveButton,
-		helpButton,
+		layout.NewSpacer(),
 	)
 
 	return toolbar

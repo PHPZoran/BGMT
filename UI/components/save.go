@@ -104,6 +104,7 @@ func SaveFile(fileName string, modType, extension string, currentDirPath string,
 				if _, err := os.Stat(tempFilePath); os.IsNotExist(err) {
 					err := errors.New("working.tmp is not present")
 					log.Print(err)
+					return
 				} else {
 					err := errors.New("working.tmp is present but could not delete")
 					log.Print(err)

@@ -1,6 +1,7 @@
 package components
 
 import (
+	"UI/utils"
 	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -78,20 +79,22 @@ func CreateLoadModButton(window fyne.Window, expectedExtension string, initialDi
 	return btn
 }
 
-func SelectFilesForInstallation(window fyne.Window, expectedExtension string, initialDir string, onFileSelected func(fileName string)) *widget.Button {
-	var inputFileName string
-	btn := widget.NewButton("Select Mod File", func() {
+func SelectFilesForInstallation(modName string, window fyne.Window, expectedExtension string, initialDir string, onFileSelected func(fileName string)) *widget.Button {
+	// First, create the button without defining its action
+	btn := widget.NewButton("Select "+modName+" File", nil)
+	btn.OnTapped = func() {
 		ShowFileLoadDialog(window, expectedExtension, func(srcFilePath string) {
-			// File is valid, now copy to working.tmp
-			switch expectedExtension {
-			case ".d", ".baf", ".cre":
-				inputFileName = filepath.Base(srcFilePath)
-				fmt.Println("File chosen is:" + inputFileName)
+			inputFileName := filepath.Base(srcFilePath) // Extract just the filename
+			if expectedExtension == ".d" || expectedExtension == ".baf" || expectedExtension == ".cre" {
+				// Valid file selected, update button text and invoke callback
+				btn.SetText(inputFileName)    // Update the button label
+				onFileSelected(inputFileName) // Execute the provided callback function
+			} else {
+				fmt.Println("Invalid file extension.")
 			}
-			fmt.Println("File chosen is:" + inputFileName)
-			onFileSelected(inputFileName)
 		}, initialDir)
-	})
+	}
+
 	return btn
 }
 
@@ -134,22 +137,22 @@ func InsertUserInputs(filePath string, inputs *UserInputs) error {
 		newContent = strings.ReplaceAll(newContent, "TYPE", inputs.Type)
 	}
 	valueStr := fmt.Sprintf("%v", inputs.Value)
-	newContent = strings.ReplaceAll(newContent, "INT", valueStr)
+	newContent = strings.ReplaceAll(newContent, "INTEGER", valueStr)
 
 	if inputs.Variable2 != "" {
-		newContent = strings.ReplaceAll(newContent, "VAR", inputs.Variable2)
+		newContent = strings.ReplaceAll(newContent, "VARIABLEHERE", inputs.Variable2)
 	}
 	if inputs.Type2 != "" {
-		newContent = strings.ReplaceAll(newContent, "TYP", inputs.Type2)
+		newContent = strings.ReplaceAll(newContent, "TYPEHERE", inputs.Type2)
 	}
 	valueStr2 := fmt.Sprintf("%v", inputs.Value2)
-	newContent = strings.ReplaceAll(newContent, "VAL", valueStr2)
+	newContent = strings.ReplaceAll(newContent, "VALUEHERE", valueStr2)
 
 	if inputs.CreatureID != "" {
 		newContent = strings.ReplaceAll(newContent, "CREATUREID", inputs.CreatureID)
 	}
 	if inputs.DialogueID != "" {
-		newContent = strings.ReplaceAll(newContent, "$dialogueID", inputs.DialogueID)
+		newContent = strings.ReplaceAll(newContent, "DIALOGUEIDHERE", inputs.DialogueID)
 	}
 	if inputs.Author != "" {
 		newContent = strings.ReplaceAll(newContent, "AUTHORNAMEHERE", inputs.Author)
@@ -184,6 +187,28 @@ func InsertUserInputs(filePath string, inputs *UserInputs) error {
 	}
 
 	// Write the updated content back to the file
+	if err := os.WriteFile(filePath, []byte(newContent), 0644); err != nil {
+		log.Printf("Failed to write to file '%s': %v", filePath, err)
+		return err
+	}
+	log.Printf("Successfully wrote to file '%s'", filePath)
+	// After writing to the file
+	readBackContent, _ := os.ReadFile(filePath)
+	log.Printf("Content after write: %s", string(readBackContent))
+
+	return nil
+}
+
+func InsertSetupVariables(inputs *UserInputs) error {
+	filePath := filepath.Join(utils.GetTranslationDirectory(), "setup.tra")
+	content, err := os.ReadFile(filePath)
+	if err != nil {
+		log.Println("ERROR: Something is wrong. Could not read file")
+		return err
+	}
+	newContent := string(content)
+	newContent = strings.ReplaceAll(newContent, "MODNAMEHERE", inputs.ModName)
+	newContent = strings.ReplaceAll(newContent, "CREATUREDISPLAYNAMEHERE", inputs.CreatureName)
 	if err := os.WriteFile(filePath, []byte(newContent), 0644); err != nil {
 		log.Printf("Failed to write to file '%s': %v", filePath, err)
 		return err
