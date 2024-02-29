@@ -143,7 +143,7 @@ func InsertUserInputs(filePath string, inputs *UserInputs) error {
 		newContent = strings.ReplaceAll(newContent, "VARIABLEHERE", inputs.Variable2)
 	}
 	if inputs.Type2 != "" {
-		newContent = strings.ReplaceAll(newContent, "TYPEHERE", inputs.Type2)
+		newContent = strings.ReplaceAll(newContent, "GLOBALSHERE", inputs.Type2)
 	}
 	valueStr2 := fmt.Sprintf("%v", inputs.Value2)
 	newContent = strings.ReplaceAll(newContent, "VALUEHERE", valueStr2)
