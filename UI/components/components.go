@@ -78,9 +78,9 @@ func CreateLoadModButton(window fyne.Window, expectedExtension string, initialDi
 	return btn
 }
 
-func SelectFilesForInstallation(window fyne.Window, expectedExtension string, initialDir string, onFileSelected func(fileName string)) *widget.Button {
+func SelectFilesForInstallation(modName string, window fyne.Window, expectedExtension string, initialDir string, onFileSelected func(fileName string)) *widget.Button {
 	var inputFileName string
-	btn := widget.NewButton("Select Mod File", func() {
+	btn := widget.NewButton("Select "+modName+" File", func() {
 		ShowFileLoadDialog(window, expectedExtension, func(srcFilePath string) {
 			// File is valid, now copy to working.tmp
 			switch expectedExtension {

@@ -77,20 +77,20 @@ func MakeNextInstallationView(directoryPath string, window fyne.Window) fyne.Can
 	})
 
 	var DialogueInput string
-	btnSelectDialogueFile := components.SelectFilesForInstallation(window, ".d", utils.GetDialogueDirectory(), func(fileName string) {
+	btnSelectDialogueFile := components.SelectFilesForInstallation("Dialogue", window, ".d", utils.GetDialogueDirectory(), func(fileName string) {
 		DialogueInput = strings.TrimSuffix(fileName, ".d")
 		fmt.Println("The selected file is:", fileName)
 	})
 
 	var ScriptsInput string
-	btnSelectScriptsFile := components.SelectFilesForInstallation(window, ".baf", utils.GetScriptDirectory(), func(fileName string) {
+	btnSelectScriptsFile := components.SelectFilesForInstallation("Scripts", window, ".baf", utils.GetScriptDirectory(), func(fileName string) {
 		ScriptsInput = strings.TrimSuffix(fileName, ".baf")
 		fmt.Println("The selected file is:", fileName)
 	})
 
 	var CreatureFileInput string
 	var CreatureNameInput string
-	btnSelectCreatureFile := components.SelectFilesForInstallation(window, ".cre", utils.GetParentDirectory(), func(fileName string) {
+	btnSelectCreatureFile := components.SelectFilesForInstallation("Creature", window, ".cre", utils.GetParentDirectory(), func(fileName string) {
 		CreatureFileInput = strings.TrimSuffix(fileName, ".cre")
 		fmt.Println("The selected file is:", fileName)
 		CreatureNameInput = CreatureFileInput
@@ -111,6 +111,7 @@ func MakeNextInstallationView(directoryPath string, window fyne.Window) fyne.Can
 			return
 		}
 		components.SaveFile(AuthorInput, "installation", extension, newDirectoryPath, window)
+		//Move output to parentDir
 		NavigateTo(window, directoryPath, MakeHomeView)
 	})
 	btnToSave.Hide()
