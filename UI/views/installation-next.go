@@ -111,7 +111,12 @@ func MakeNextInstallationView(directoryPath string, window fyne.Window) fyne.Can
 			return
 		}
 		components.SaveFile(AuthorInput, "installation", extension, newDirectoryPath, window)
-		//Move output to parentDir
+		err := components.CopyFile(filepath.Join(newDirectoryPath, AuthorInput+extension), filepath.Join(utils.GetParentDirectory(), AuthorInput+extension))
+		if err != nil {
+			dialog.ShowError(err, window)
+		} else {
+			fmt.Println("Successfully copied installation file to home project dir")
+		}
 		NavigateTo(window, directoryPath, MakeHomeView)
 	})
 	btnToSave.Hide()
@@ -133,6 +138,13 @@ func MakeNextInstallationView(directoryPath string, window fyne.Window) fyne.Can
 		if templateErr != nil {
 			return
 		}
+		log.Printf("Inserting UserInputs into setup.tra file")
+		// Insert UserInputs into setup file
+		setupErr := components.InsertSetupVariables(userInputs)
+		if setupErr != nil {
+			return
+		}
+
 		utils.UpdateFileContent(workingFilePath)
 		btnToSave.Show()
 	})

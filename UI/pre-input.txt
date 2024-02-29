@@ -2,6 +2,13 @@
 //DONE: Title Names for Mod Button in Installation
 //TODO: Look into the Translation File changes on last line.
 //TODO: Settings Light and Dark
-//TODO: Add English folder to Translations
-//TODO: Installation file gets saved to parent dir
+//DONE: Add English folder to Translations
+//DONE: Installation file gets saved to parent dir
 //DONE: Export Dir L162 remove arg
+
+		err := components.CopyFile(filepath.Join(AuthorInput+extension, newDirectoryPath), filepath.Join(utils.GetParentDirectory(), AuthorInput+extension))
+		if err != nil {
+			dialog.ShowError(err, window)
+		} else {
+			fmt.Println("Successfully copied installation file to home project dir")
+		}
