@@ -12,6 +12,8 @@ import (
 	"strings"
 )
 
+//-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=
+
 func WeiDuFileConversion(window fyne.Window) {
 	var filename string
 	entry := widget.NewEntry()
@@ -25,6 +27,22 @@ func WeiDuFileConversion(window fyne.Window) {
 		zipPath := GetParentDirectory() + "/" + filename + ".zip"
 		fmt.Println(zipPath)
 		exportZip(zipPath)
+
+		//checkDialog(zipSource(GetInstallationDirectory(), zipPath), window)
+		//checkDialog(zipSource(GetTranslationDirectory(), zipPath), window)
+		//checkDialog(zipSource(GetScriptDirectory(), zipPath), window)
+		//checkDialog(zipSource(GetDialogueDirectory(), zipPath), window)
+
+		//if CreateZipFolder(GetParentDirectory() + "/" + filename + ".zip") {
+		//	dialog.ShowInformation("Error", "Error Creating Zip Folder", window)
+		//	return
+		//}
+
+		//Roadmap for later use
+		//WeiDuConversionHelper("dialogue")
+		//WeiDuConversionHelper("script")
+		//WeiDuConversionHelper("installation")
+		//WeiDuConversionHelper("translation")
 
 		dialog.ShowInformation("WeiDu File Status", "WeiDu file conversions are complete and can be found at:\n\n"+
 			GetParentDirectory()+"/"+filename, window)
@@ -44,20 +62,12 @@ func exportZip(zipFolder string) {
 		fmt.Println("Error creating zip file:", err)
 		return
 	}
-	defer func() {
-		if err := zipFile.Close(); err != nil {
-			fmt.Println("Error closing zip file:", err)
-		}
-	}()
+	defer zipFile.Close()
 
 	directories := []string{GetDialogueDirectory(), GetScriptDirectory(), GetTranslationDirectory(), GetCreatureDirectory()}
 
 	zipWriter := zip.NewWriter(zipFile)
-	defer func() {
-		if err := zipFile.Close(); err != nil {
-			fmt.Println("Error closing zip file:", err)
-		}
-	}()
+	defer zipWriter.Close()
 
 	// Copy Weidu_Compiler.exe as setup-ProjectName.exe in the zip
 	compilerPath := filepath.Join(projectDir, "Weidu_Compiler.exe")
@@ -132,11 +142,7 @@ func addFileToZip(zipWriter *zip.Writer, filePath, zipPath string) error {
 	if err != nil {
 		return err
 	}
-	defer func() {
-		if err := file.Close(); err != nil {
-			fmt.Println("Error closing file:", err)
-		}
-	}()
+	defer file.Close()
 
 	_, err = io.Copy(fileWriter, file)
 	return err
